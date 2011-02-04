@@ -31,13 +31,16 @@ public class Game {
 	private String player2;
 
 	@NotNull
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable=false)
 	private Date started;
 	private Date ended;
 
 	private Boolean ready1;
 	private Boolean ready2;
+
+	/** indicates that player 1 has won the game, else player 2 */
+	private Boolean win1;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -80,6 +83,14 @@ public class Game {
 	}
 	public Boolean getReady2() {
 		return ready2;
+	}
+	/** indicates that player 1 has won the game, else player 2 */
+	public void setWin1(Boolean win1) {
+		this.win1 = win1;
+	}
+	/** indicates that player 1 has won the game, else player 2 */
+	public Boolean getWin1() {
+		return win1;
 	}
 
 }
