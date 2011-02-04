@@ -4,5 +4,10 @@
   <session-factory>
     <mapping class="com.multimedia.seabattle.model.beans.Country"/>
 	<mapping class="com.multimedia.seabattle.model.beans.User"/>
+
+    <mapping class="com.multimedia.seabattle.model.beans.Game"/>
+	<mapping class="com.multimedia.seabattle.model.beans.Ship"/>
+    <mapping class="com.multimedia.seabattle.model.beans.Cell"/>
+	<mapping class="com.multimedia.seabattle.model.beans.Round"/>
   </session-factory>
 </hibernate-configuration>
