@@ -10,12 +10,20 @@
  ******************************************************************************/
 package com.multimedia.seabattle.model.beans;
 
+import javax.persistence.AttributeOverrides;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 public class Cell {
@@ -26,6 +34,7 @@ public class Cell {
 	@ManyToOne
 	@org.hibernate.annotations.ForeignKey(name="FK_cell_game")
 	@JoinColumn(name="id_game")
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Game game;
 
 	@ManyToOne
@@ -33,12 +42,18 @@ public class Cell {
 	@JoinColumn(name="id_ship")
 	private Ship ship;
 
-	private Integer x;
-	private Integer y;
+	@Embedded
+	@AttributeOverrides( {
+           @AttributeOverride(name="x", column = @Column(name="x")) ,
+           @AttributeOverride(name="y", column = @Column(name="y")) 
+   } )
+	private Coordinates coordinates;
 
 	/** indicates that player1 owns it, else player2 is owner */
+	@NotNull
 	private Boolean player1;
 	/** indicates that it is not shoot (if true)*/
+	@NotNull
 	private Boolean alive;
 	/** indicates that player1 owns it, else player2 is owner */
 	public void setPlayer1(Boolean player1) {
@@ -74,17 +89,11 @@ public class Cell {
 	public Ship getShip() {
 		return ship;
 	}
-	public void setX(Integer x) {
-		this.x = x;
+	public void setCoordinates(Coordinates coordinates) {
+		this.coordinates = coordinates;
 	}
-	public Integer getX() {
-		return x;
-	}
-	public void setY(Integer y) {
-		this.y = y;
-	}
-	public Integer getY() {
-		return y;
+	public Coordinates getCoordinates() {
+		return coordinates;
 	}
 
 }

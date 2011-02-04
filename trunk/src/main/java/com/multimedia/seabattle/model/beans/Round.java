@@ -23,6 +23,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 public class Round {
 	@Id
@@ -32,6 +35,7 @@ public class Round {
 	@ManyToOne
 	@org.hibernate.annotations.ForeignKey(name="FK_round_game")
 	@JoinColumn(name="id_game")
+	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Game game;
 
 	@ManyToOne
