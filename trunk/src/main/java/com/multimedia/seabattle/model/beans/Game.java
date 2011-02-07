@@ -92,5 +92,12 @@ public class Game {
 	public Boolean getWin1() {
 		return win1;
 	}
+	@Override
+	public String toString() {
+		return "Game [id=" + id + ", player1=" + player1 + ", player2="
+				+ player2 + ", started=" + started + ", ended=" + ended
+				+ ", ready1=" + ready1 + ", ready2=" + ready2 + ", win1="
+				+ win1 + "]";
+	}
 
 }

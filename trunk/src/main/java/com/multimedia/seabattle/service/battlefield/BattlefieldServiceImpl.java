@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.multimedia.seabattle.controllers.HomeController;
 import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.Cell;
 import com.multimedia.seabattle.model.beans.Coordinates;
@@ -21,8 +20,9 @@ import com.multimedia.seabattle.model.beans.Ship;
 @Service("battlefieldService")
 public class BattlefieldServiceImpl implements IBattlefieldService{
 
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+	private static final Logger logger = LoggerFactory.getLogger(BattlefieldServiceImpl.class);
 	private IGenericDAO<Cell, Long> cell_dao;
+	private IGenericDAO<Ship, Long> ship_dao;
 
 	private final int WIDTH = 10;
 	private final int HEIGHT = 10;
@@ -59,19 +59,46 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 	}
 
 	@Override
-	public Ship createShip(List<Cell> cells) {
+	public Ship deployShip(Coordinates[] coords, Game game, Boolean player1){
+		List<Cell> cells = getCellsForCoords(coords, game, player1);
+
+		if (cells.size()==0 || cells.size()!=coords.length || !checkPositions(cells)){
+			return null;
+		} else {
+			Ship ship = new Ship();
+			ship.setLength(cells.size());
+			for (Cell cell:cells){
+				cell.setShip(ship);
+			}
+			ship.setPlayer1(player1);
+			ship.setGame(game);
+	
+			ship_dao.makePersistent(ship);
+			ship_dao.refresh(ship);
+			return ship;
+		}
+	}
+
+	private List<Cell> getCellsForCoords(Coordinates[] coords, Game game, Boolean player1){
+		return cell_dao.getByPropertiesValuesPortionOrdered(null, null,
+				new String[]{"game", "player1", "coordinates"},
+				new Object[][]{new Object[]{game}, new Object[]{player1}, coords},
+				0, 0, null, null);
+		//return cell_dao.getByPropertyValues(null, "coordinates", coords);
+	}
+
+	/**
+	 * checks the given cells for being empty, as well as cells near them
+	 * @param cells to check
+	 * @return true if ship may be safely deployed here
+	 */
+	private boolean checkPositions(List<Cell> cells) {
 		Set<Coordinates> checked_cells = new HashSet<Coordinates>();
 		for (Cell cell:cells){
 			Coordinates base = cell.getCoordinates();
-			checked_cells.add(cell.getCoordinates());
-			if (checkRight(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, 0));
-			}
-			if (checkLeft(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, 0));
-			}
-			if (checkBottom(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 0, 1));
+			//checking collision with other ships
+			if (checkTop(base)&&checkLeft(base)){
+				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, -1));
 			}
 			if (checkTop(base)){
 				checked_cells.add(getCoordinate(cell.getCoordinates(), 0, -1));
@@ -79,11 +106,18 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 			if (checkTop(base)&&checkRight(base)){
 				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, -1));
 			}
-			if (checkTop(base)&&checkLeft(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, -1));
+			if (checkLeft(base)){
+				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, 0));
+			}
+			checked_cells.add(cell.getCoordinates());
+			if (checkRight(base)){
+				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, 0));
 			}
 			if (checkBottom(base)&&checkRight(base)){
 				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, 1));
+			}
+			if (checkBottom(base)){
+				checked_cells.add(getCoordinate(cell.getCoordinates(), 0, 1));
 			}
 			if (checkBottom(base)&&checkLeft(base)){
 				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, 1));
@@ -94,12 +128,13 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 			Coordinates c = i.next();
 			Object o = cell_dao.getSinglePropertyU("ship.id", "coordinates", c);
 			if (o==null){
-				logger.info("point is empty ["+c.getX()+"]["+c.getY()+"]");
+				logger.trace("point is empty "+c.toString());
 			} else {
-				logger.info("point is busy ["+c.getX()+"]["+c.getY()+"]");
+				logger.trace("point is busy "+c.toString());
+				return false;
 			}
 		}
-		return null;
+		return true;
 	}
 
 	private Coordinates getCoordinate(Coordinates base, int x, int y){
@@ -111,7 +146,7 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 
 	/** check if this coordinate can have something in top */
 	private boolean checkTop(Coordinates base){
-		return base.getY()>1;
+		return base.getY()>0;
 	}
 
 	/** check if this coordinate can have something in bottom */
@@ -121,7 +156,7 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 
 	/** check if this coordinate can have something in left */
 	private boolean checkLeft(Coordinates base){
-		return base.getX()>1;
+		return base.getX()>0;
 	}
 
 	/** check if this coordinate can have something in right */
@@ -129,9 +164,21 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 		return base.getX()<WIDTH-1;
 	}
 
+	@Override
+	public boolean releaseShip(Ship ship) {
+		cell_dao.updateObjectArrayShortByProperty(new String[]{"ship"}, new Object[]{null},
+				"ship.id", new Object[]{ship.getId()});
+		return true;
+	}
+
 	// -------------------------------- dependencies --------------------------
 		@Resource(name="cellDAO")
 		public void setCell_dao(IGenericDAO<Cell, Long> value){
 			this.cell_dao = value;
+		}
+
+		@Resource(name="shipDAO")
+		public void setShip_dao(IGenericDAO<Ship, Long> value){
+			this.ship_dao = value;
 		}
 }

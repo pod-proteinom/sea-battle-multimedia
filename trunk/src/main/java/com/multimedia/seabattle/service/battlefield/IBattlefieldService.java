@@ -3,6 +3,7 @@ package com.multimedia.seabattle.service.battlefield;
 import java.util.List;
 
 import com.multimedia.seabattle.model.beans.Cell;
+import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Ship;
 
@@ -23,9 +24,18 @@ public interface IBattlefieldService {
 	public List<Cell> getBattlefield(Game game, Boolean player1);
 
 	/**
-	 * create a ship on the given cells
-	 * @param cells where to place ship
+	 * try to deploy ship on the given coordinates, game, player
+	 * @param coords coordinates of the ship
+	 * @param game game in which to place the ship
+	 * @param player1 does player1 owns the ship
 	 * @return a ship or null if an error happened
 	 */
-	public Ship createShip(List<Cell> cells);
+	public Ship deployShip(Coordinates[] coords, Game game, Boolean player1);
+
+	/**
+	 * try to release all cells that are occupied by this ship
+	 * and deletes this this ship
+	 * @return a ship or null if an error happened
+	 */
+	public boolean releaseShip(Ship ship);
 }

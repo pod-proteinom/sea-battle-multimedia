@@ -15,7 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -28,11 +28,13 @@ public class Ship {
 
 	private Integer length;
 
-	@ManyToOne
+	@OneToOne
 	@org.hibernate.annotations.ForeignKey(name="FK_ship_game")
 	@JoinColumn(name="id_game")
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Game game;
+
+	private Boolean player1;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -56,6 +58,20 @@ public class Ship {
 
 	public Game getGame() {
 		return game;
+	}
+
+	public void setPlayer1(Boolean player1) {
+		this.player1 = player1;
+	}
+
+	public Boolean getPlayer1() {
+		return player1;
+	}
+
+	@Override
+	public String toString() {
+		return "Ship [id=" + id + ", length=" + length + ", game=" + game
+				+ ", player1=" + player1 + "]";
 	}
 
 }
