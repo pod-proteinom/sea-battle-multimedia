@@ -32,6 +32,14 @@
 		<level value="info" />
 	</logger>
 
+	<logger name="com.multimedia.seabattle">
+		<level value="debug" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.dao">
+		<level value="error" />
+	</logger>
+
 	<!-- Root Logger -->
 	<root>
 		<priority value="warn" />

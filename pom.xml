@@ -133,12 +133,12 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- hibernate 3.6.0 final -->
+		<!-- hibernate 3.6.1 final -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<type>jar</type>
-			<version>3.6.0.Final</version>
+			<version>3.6.1.Final</version>
 		</dependency>
 
 		<!-- hibernate validator 4.1.0.Final -->

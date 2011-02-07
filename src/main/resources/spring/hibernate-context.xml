@@ -44,37 +44,37 @@
   
   	<!-- daos -->
   	<bean id="countryDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="Country"/>
+  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Country"/>
   		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Country"/>
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
   	<bean id="userDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="User"/>
+  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.User"/>
   		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.User"/>
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
   	<bean id="gameDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="Game"/>
+  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Game"/>
   		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Game"/>
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
   	<bean id="shipDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="Ship"/>
+  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Ship"/>
   		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Ship"/>
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
   	<bean id="cellDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="Cell"/>
+  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Cell"/>
   		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Cell"/>
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
   	<bean id="roundDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="Round"/>
+  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Round"/>
   		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Round"/>
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>

@@ -1,21 +1,22 @@
 package com.multimedia.seabattle.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.annotation.Resource;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.multimedia.seabattle.dao.IGenericDAO;
+import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.Ship;
 import com.multimedia.seabattle.service.battlefield.IBattlefieldService;
 import com.multimedia.seabattle.service.game.IGameService;
-import com.multimedia.seabattle.model.beans.Cell;
+import com.multimedia.seabattle.model.types.ShipType;
 
 import static org.junit.Assert.*;
 
@@ -25,43 +26,84 @@ import static org.junit.Assert.*;
 ,"classpath:/spring/hibernate-context.xml"})
 public class GameServiceTest {
 	private IGameService game_service;
-	private IBattlefieldService battlefield_service;
+
+	private IGenericDAO<Ship, Long> ship_dao;
+
+	private Game game;
 
 	/**
-	 * test a game process
-	 *  starts a game between 2 players,
-	 *  ends it, ands deletes
+	 * preparing battlefield before test
+	 */
+	@Before
+	public void createGame(){
+		game = game_service.startGame("Player 1", "Player 2");
+	}
+
+	/**
+	 * deleting battlefield after test is finished
+	 */
+	@After
+	public void destroyGame(){
+		game_service.deleteGame(game.getId());
+	}
+
+	/**
+	 * creates ships of all types and deletes them.
+	 * No collisions possible so must be no errors
 	 */
 	@Test
-	public void testGameCreation(){
-		Game game = game_service.startGame("Player 1", "Player 2");
+	public void testShipCreationOk(){
+		for (ShipType type:ShipType.values()){
+			Long ship_id = game_service.createShip(new Coordinates(1, 1), type, game, Boolean.TRUE).getId();
+			Ship ship = ship_dao.getById(ship_id);
+			assertNotNull("ship creation failed ["+type.toString()+"]", ship);
+			assertEquals("ship has wrong game", game.getId(), ship.getGame().getId());
+			assertEquals("ship has wrong player", Boolean.TRUE, ship.getPlayer1());
+			assertTrue("failed to delete ship", game_service.deleteShip(ship.getId(), game, Boolean.TRUE));
+		}
+	}
 
-		assertNotNull(game);
-		assertNotNull(game.getId());
-		assertNotNull(game.getStarted());
+	/**
+	 * creates ships so that their beginning is upper than the battlefield
+	 */
+	@Test
+	public void testShipCreationFailBorderTop(){
+		Ship ship = game_service.createShip(new Coordinates(1, -1), ShipType.LARGE_VERTICAL, game, Boolean.TRUE);
+		assertNull("ship created with coordinates upper then normal", ship);
+	}
 
-		List<Cell> cells1 = battlefield_service.getBattlefield(game, Boolean.TRUE);
-		List<Cell> cells2 = battlefield_service.getBattlefield(game, Boolean.FALSE);
+	/**
+	 * creates ships so that their beginning is lefter than the battlefield
+	 */
+	@Test
+	public void testShipCreationFailBorderLeft(){
+		Ship ship = game_service.createShip(new Coordinates(-1, 1), ShipType.LARGE_HORISONTAL, game, Boolean.TRUE);
+		assertNull("ship created with coordinates lefter then normal", ship);
+	}
 
-		assertTrue(cells1.size()==100);
-		assertTrue(cells2.size()==100);
+	/**
+	 * creates ships so that their beginning is lower than the battlefield
+	 */
+	@Test
+	public void testShipCreationFailBorderBottom(){
+		Ship ship = game_service.createShip(new Coordinates(1, 8), ShipType.LARGE_VERTICAL, game, Boolean.TRUE);
+		assertNull("ship created with coordinates lower then normal", ship);
+	}
 
-		List<Cell> new_ship = new ArrayList<Cell>();
-		new_ship.add(cells1.get(0));
-		battlefield_service.createShip(new_ship);
-
-		game_service.endGame(game);
-		
-		assertNotNull(game.getEnded());
-
-		assertTrue(game_service.deleteGame(game.getId()));
+	/**
+	 * creates ships so that their beginning is righter than the battlefield
+	 */
+	@Test
+	public void testShipCreationFailBorderRight(){
+		Ship ship = game_service.createShip(new Coordinates(8, 1), ShipType.LARGE_HORISONTAL, game, Boolean.TRUE);
+		assertNull("ship created with coordinates righter then normal", ship);
 	}
 
 	@Required
 	@Resource(name="gameService")
-	public void setDao(IGameService value){this.game_service = value;}
+	public void setGameService(IGameService value){this.game_service = value;}
 
 	@Required
-	@Resource(name="battlefieldService")
-	public void setDao(IBattlefieldService value){this.battlefield_service = value;}
+	@Resource(name="shipDAO")
+	public void setShipDao(IGenericDAO<Ship, Long> value){this.ship_dao = value;}
 }
