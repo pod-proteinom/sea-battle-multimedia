@@ -1,4 +1,4 @@
-package com.multimedia.seabattle.service;
+package com.multimedia.seabattle.game.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
