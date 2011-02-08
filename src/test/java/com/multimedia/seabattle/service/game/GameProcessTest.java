@@ -1,4 +1,4 @@
-package com.multimedia.seabattle.game.service;
+package com.multimedia.seabattle.service.game;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.multimedia.seabattle.model.beans.Cell;
-import com.multimedia.seabattle.model.beans.Game;
-import com.multimedia.seabattle.service.battlefield.IBattlefieldService;
 import com.multimedia.seabattle.service.game.IGameService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
