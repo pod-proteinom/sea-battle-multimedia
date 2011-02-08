@@ -1,4 +1,4 @@
-package com.multimedia.seabattle.game.service;
+package com.multimedia.seabattle.service.game;
 
 import javax.annotation.Resource;
 
