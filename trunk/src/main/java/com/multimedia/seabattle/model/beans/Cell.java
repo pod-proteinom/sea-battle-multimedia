@@ -8,7 +8,7 @@
  * Contributors:
  *     demchuck.dima@gmail.com - initial API and implementation
  ******************************************************************************/
-package com.multimedia.seabattle.model.beans2;
+package com.multimedia.seabattle.model.beans;
 
 import javax.persistence.AttributeOverrides;
 import javax.persistence.AttributeOverride;

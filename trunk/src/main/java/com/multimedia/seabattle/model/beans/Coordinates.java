@@ -1,4 +1,4 @@
-package com.multimedia.seabattle.model.beans2;
+package com.multimedia.seabattle.model.beans;
 
 import javax.persistence.Embeddable;
 
