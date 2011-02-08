@@ -19,7 +19,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+
+import com.multimedia.seabattle.model.types.GameShipType;
 
 @Entity
 public class Game {
@@ -41,6 +44,11 @@ public class Game {
 
 	/** indicates that player 1 has won the game, else player 2 */
 	private Boolean win1;
+
+	//TODO: make it not transient when more game types will be available
+	/** just for test. because we now have only one game type */
+	@Transient
+	private final GameShipType type = GameShipType.CLASSIC;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -98,6 +106,10 @@ public class Game {
 				+ player2 + ", started=" + started + ", ended=" + ended
 				+ ", ready1=" + ready1 + ", ready2=" + ready2 + ", win1="
 				+ win1 + "]";
+	}
+
+	public GameShipType getType() {
+		return type;
 	}
 
 }

@@ -404,7 +404,7 @@ import org.hibernate.ScrollableResults;
 	 * @param max max results
 	 * @return list of values
 	 */
-	public List<Object> getSingleProperty(String property, String[] whereName, Object[] whereValue, int first, int max, String[] orderBy, String[] orderHow);
+	public List<? extends Object> getSingleProperty(String property, String[] whereName, Object[] whereValue, int first, int max, String[] orderBy, String[] orderHow);
 
     public List<Object> getSinglePropertyOrderRand(String property, String whereName, Object whereValue, int first, int max);
 
