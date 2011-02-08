@@ -1,4 +1,4 @@
-package com.multimedia.seabattle.battlefield.service;
+package com.multimedia.seabattle.integration;
 
 import java.util.List;
 
