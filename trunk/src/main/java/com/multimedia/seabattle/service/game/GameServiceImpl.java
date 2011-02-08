@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.dao.IGenericDAO;
-import com.multimedia.seabattle.model.beans.Coordinates;
-import com.multimedia.seabattle.model.beans.Game;
-import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.beans2.Coordinates;
+import com.multimedia.seabattle.model.beans2.Game;
+import com.multimedia.seabattle.model.beans2.Ship;
 import com.multimedia.seabattle.model.types.ShipType;
 import com.multimedia.seabattle.service.battlefield.BattlefieldServiceImpl;
 import com.multimedia.seabattle.service.battlefield.IBattlefieldService;

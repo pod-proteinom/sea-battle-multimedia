@@ -1,6 +1,6 @@
 package com.multimedia.seabattle.model.types;
 
-import com.multimedia.seabattle.model.beans.Coordinates;
+import com.multimedia.seabattle.model.beans2.Coordinates;
 
 /**
  * defines a ship name, coordinates offset and length of all available ships

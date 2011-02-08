@@ -2,10 +2,10 @@ package com.multimedia.seabattle.service.battlefield;
 
 import java.util.List;
 
-import com.multimedia.seabattle.model.beans.Cell;
-import com.multimedia.seabattle.model.beans.Coordinates;
-import com.multimedia.seabattle.model.beans.Game;
-import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.beans2.Cell;
+import com.multimedia.seabattle.model.beans2.Coordinates;
+import com.multimedia.seabattle.model.beans2.Game;
+import com.multimedia.seabattle.model.beans2.Ship;
 
 /**
  * for working with battlefield(cells and boats)

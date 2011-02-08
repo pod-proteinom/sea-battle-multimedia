@@ -8,7 +8,7 @@
  * Contributors:
  *     demchuck.dima@gmail.com - initial API and implementation
  ******************************************************************************/
-package com.multimedia.seabattle.model.beans;
+package com.multimedia.seabattle.model.beans2;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
