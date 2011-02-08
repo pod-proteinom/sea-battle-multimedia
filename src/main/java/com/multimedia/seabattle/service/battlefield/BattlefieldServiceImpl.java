@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.dao.IGenericDAO;
-import com.multimedia.seabattle.model.beans.Cell;
-import com.multimedia.seabattle.model.beans.Coordinates;
-import com.multimedia.seabattle.model.beans.Game;
-import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.beans2.Cell;
+import com.multimedia.seabattle.model.beans2.Coordinates;
+import com.multimedia.seabattle.model.beans2.Game;
+import com.multimedia.seabattle.model.beans2.Ship;
 
 @Service("battlefieldService")
 public class BattlefieldServiceImpl implements IBattlefieldService{

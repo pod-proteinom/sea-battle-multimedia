@@ -1,8 +1,8 @@
 package com.multimedia.seabattle.service.game;
 
-import com.multimedia.seabattle.model.beans.Coordinates;
-import com.multimedia.seabattle.model.beans.Game;
-import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.beans2.Coordinates;
+import com.multimedia.seabattle.model.beans2.Game;
+import com.multimedia.seabattle.model.beans2.Ship;
 import com.multimedia.seabattle.model.types.ShipType;
 
 /**
