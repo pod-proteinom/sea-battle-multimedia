@@ -1,4 +1,4 @@
-package com.multimedia.seabattle.service;
+package com.multimedia.seabattle.game.service;
 
 import javax.annotation.Resource;
 
@@ -14,7 +14,6 @@ import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Ship;
-import com.multimedia.seabattle.service.battlefield.IBattlefieldService;
 import com.multimedia.seabattle.service.game.IGameService;
 import com.multimedia.seabattle.model.types.ShipType;
 
@@ -54,12 +53,16 @@ public class GameServiceTest {
 	@Test
 	public void testShipCreationOk(){
 		for (ShipType type:ShipType.values()){
-			Long ship_id = game_service.createShip(new Coordinates(1, 1), type, game, Boolean.TRUE).getId();
-			Ship ship = ship_dao.getById(ship_id);
-			assertNotNull("ship creation failed ["+type.toString()+"]", ship);
-			assertEquals("ship has wrong game", game.getId(), ship.getGame().getId());
-			assertEquals("ship has wrong player", Boolean.TRUE, ship.getPlayer1());
-			assertTrue("failed to delete ship", game_service.deleteShip(ship.getId(), game, Boolean.TRUE));
+			if (type.equals(ShipType.UNSUPPORTED_SHIP)){
+				Ship ship = game_service.createShip(new Coordinates(1, 1), type, game, Boolean.TRUE);
+				assertNull("unsupported ship was created, but might not", ship);
+			} else {
+				Ship ship = game_service.createShip(new Coordinates(1, 1), type, game, Boolean.TRUE);
+				assertNotNull("ship creation failed ["+type.toString()+"]", ship);
+				assertEquals("ship has wrong game", game.getId(), ship.getGame().getId());
+				assertEquals("ship has wrong player", Boolean.TRUE, ship.getPlayer1());
+				assertTrue("failed to delete ship", game_service.deleteShip(ship.getId(), game, Boolean.TRUE));
+			}
 		}
 	}
 
