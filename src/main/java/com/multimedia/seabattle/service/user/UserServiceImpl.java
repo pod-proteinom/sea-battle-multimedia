@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 import com.multimedia.seabattle.dao.IGenericDAO;
-import com.multimedia.seabattle.model.beans2.User;
+import com.multimedia.seabattle.model.beans.User;
 
 @Service("userService")
 public class UserServiceImpl implements IUserService{

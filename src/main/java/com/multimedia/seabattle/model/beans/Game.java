@@ -22,6 +22,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import com.multimedia.seabattle.model.types.GameShipCollision;
 import com.multimedia.seabattle.model.types.GameShipType;
 
 @Entity
@@ -36,6 +37,8 @@ public class Game {
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(updatable=false)
+	private Date created;
+
 	private Date started;
 	private Date ended;
 
@@ -49,6 +52,12 @@ public class Game {
 	/** just for test. because we now have only one game type */
 	@Transient
 	private final GameShipType type = GameShipType.CLASSIC;
+	@Transient
+	private final Integer width = 10;
+	@Transient
+	private final Integer height = 10;
+	@Transient
+	private final GameShipCollision shipCollisionType = GameShipCollision.CLASSIC;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -110,6 +119,21 @@ public class Game {
 
 	public GameShipType getType() {
 		return type;
+	}
+	public Integer getWidth() {
+		return width;
+	}
+	public Integer getHeight() {
+		return height;
+	}
+	public GameShipCollision getShipCollisionType() {
+		return shipCollisionType;
+	}
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+	public Date getCreated() {
+		return created;
 	}
 
 }

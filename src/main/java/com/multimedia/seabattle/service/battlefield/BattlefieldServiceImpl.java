@@ -1,9 +1,7 @@
 package com.multimedia.seabattle.service.battlefield;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -12,10 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.dao.IGenericDAO;
-import com.multimedia.seabattle.model.beans2.Cell;
-import com.multimedia.seabattle.model.beans2.Coordinates;
-import com.multimedia.seabattle.model.beans2.Game;
-import com.multimedia.seabattle.model.beans2.Ship;
+import com.multimedia.seabattle.model.beans.Cell;
+import com.multimedia.seabattle.model.beans.Coordinates;
+import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.types.ShipCreationResult;
+import com.multimedia.seabattle.model.types.ShipType;
+import com.multimedia.seabattle.model.types.ShootResult;
+import com.multimedia.seabattle.service.collisions.CollisionIterator;
+import com.multimedia.seabattle.service.collisions.IShipCollisionHandler;
+import com.multimedia.seabattle.service.ships.IGameShips;
+import com.multimedia.seabattle.service.ships.IShipGenerator;
 
 @Service("battlefieldService")
 public class BattlefieldServiceImpl implements IBattlefieldService{
@@ -24,13 +29,12 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 	private IGenericDAO<Cell, Long> cell_dao;
 	private IGenericDAO<Ship, Long> ship_dao;
 
-	private final int WIDTH = 10;
-	private final int HEIGHT = 10;
+	private IShipCollisionHandler ship_collision_handler;
 
 	@Override
 	public void createBattlefield(Game game) {
-		for (int i=0;i<WIDTH;i++){
-			for (int j=0;j<HEIGHT;j++){
+		for (int i=0;i<game.getWidth();i++){
+			for (int j=0;j<game.getHeight();j++){
 				cell_dao.makePersistent(createCell(i, j, game, Boolean.TRUE));
 				cell_dao.makePersistent(createCell(i, j, game, Boolean.FALSE));
 			}
@@ -59,23 +63,30 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 	}
 
 	@Override
-	public Ship deployShip(Coordinates[] coords, Game game, Boolean player1){
+	public ShipCreationResult deployShip(Coordinates[] coords, Game game, Boolean player1, Ship ship){
 		List<Cell> cells = getCellsForCoords(coords, game, player1);
 
-		if (cells.size()==0 || cells.size()!=coords.length || !checkPositions(cells)){
-			return null;
-		} else {
-			Ship ship = new Ship();
-			ship.setLength(cells.size());
-			for (Cell cell:cells){
-				cell.setShip(ship);
+		if (cells.size()==0 || cells.size()!=coords.length){
+			if (logger.isDebugEnabled()){
+				logger.debug("deploying ship failed in cells "+cells+" "+ShipCreationResult.NOT_EXISTING_CELL);
 			}
-			ship.setPlayer1(player1);
-			ship.setGame(game);
-	
+			return ShipCreationResult.NOT_EXISTING_CELL;
+		} else if (!checkPositions(coords, game, player1)) {
+			if (logger.isDebugEnabled()){
+				logger.debug("deploying ship failed in cells "+cells+" "+ShipCreationResult.SHIP_COLLISION);
+			}
+			return ShipCreationResult.SHIP_COLLISION;
+		} else {
 			ship_dao.makePersistent(ship);
 			ship_dao.refresh(ship);
-			return ship;
+			for (Cell cell:cells){
+				cell.setShip(ship);
+				cell_dao.update(cell);
+			}
+			if (logger.isDebugEnabled()){
+				logger.debug("deploying ship succeed in cells "+cells);
+			}
+			return ShipCreationResult.OK;
 		}
 	}
 
@@ -92,41 +103,12 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 	 * @param cells to check
 	 * @return true if ship may be safely deployed here
 	 */
-	private boolean checkPositions(List<Cell> cells) {
-		Set<Coordinates> checked_cells = new HashSet<Coordinates>();
-		for (Cell cell:cells){
-			Coordinates base = cell.getCoordinates();
-			//checking collision with other ships
-			if (checkTop(base)&&checkLeft(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, -1));
-			}
-			if (checkTop(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 0, -1));
-			}
-			if (checkTop(base)&&checkRight(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, -1));
-			}
-			if (checkLeft(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, 0));
-			}
-			checked_cells.add(cell.getCoordinates());
-			if (checkRight(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, 0));
-			}
-			if (checkBottom(base)&&checkRight(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 1, 1));
-			}
-			if (checkBottom(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), 0, 1));
-			}
-			if (checkBottom(base)&&checkLeft(base)){
-				checked_cells.add(getCoordinate(cell.getCoordinates(), -1, 1));
-			}
-		}
-		Iterator<Coordinates> i = checked_cells.iterator();
+	private boolean checkPositions(Coordinates[] coords, Game game, Boolean player1) {
+		CollisionIterator i = ship_collision_handler.getShipCoordinates(coords, game);
 		while (i.hasNext()){
 			Coordinates c = i.next();
-			Object o = cell_dao.getSinglePropertyU("ship.id", "coordinates", c);
+			Object o = cell_dao.getSinglePropertyU("ship.id", 
+					new String[]{"coordinates", "game", "player1"}, new Object[]{c, game, player1}, 0, null, null);
 			if (o==null){
 				logger.trace("point is empty "+c.toString());
 			} else {
@@ -137,48 +119,75 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 		return true;
 	}
 
-	private Coordinates getCoordinate(Coordinates base, int x, int y){
-		Coordinates c = new Coordinates();
-		c.setX(base.getX() + x);
-		c.setY(base.getY() + y);
-		return c;
-	}
-
-	/** check if this coordinate can have something in top */
-	private boolean checkTop(Coordinates base){
-		return base.getY()>0;
-	}
-
-	/** check if this coordinate can have something in bottom */
-	private boolean checkBottom(Coordinates base){
-		return base.getY()<HEIGHT-1;
-	}
-
-	/** check if this coordinate can have something in left */
-	private boolean checkLeft(Coordinates base){
-		return base.getX()>0;
-	}
-
-	/** check if this coordinate can have something in right */
-	private boolean checkRight(Coordinates base){
-		return base.getX()<WIDTH-1;
-	}
-
 	@Override
-	public boolean releaseShip(Ship ship) {
+	public boolean releaseShip(Long ship_id) {
 		cell_dao.updateObjectArrayShortByProperty(new String[]{"ship"}, new Object[]{null},
-				"ship.id", new Object[]{ship.getId()});
+				"ship.id", new Object[]{ship_id});
 		return true;
 	}
 
-	// -------------------------------- dependencies --------------------------
-		@Resource(name="cellDAO")
-		public void setCell_dao(IGenericDAO<Cell, Long> value){
-			this.cell_dao = value;
-		}
+	@Override
+	public Long getShip(Coordinates coords, Game game, Boolean player1) {
+		return (Long)cell_dao.getSinglePropertyU("ship.id",
+				new String[]{"game", "player1", "coordinates"},
+				new Object[]{game, player1, coords},
+				0, null, null);
+	}
 
-		@Resource(name="shipDAO")
-		public void setShip_dao(IGenericDAO<Ship, Long> value){
-			this.ship_dao = value;
+	@Override
+	public Map<Coordinates, ShipType> generateShips(Game game, IGameShips game_ships, IShipGenerator generator) {
+		return generator.generateShips(game_ships, ship_collision_handler.getShipCollisions(game), game);
+	}
+
+	@Override
+	public void clear(Game game, Boolean player1) {
+		cell_dao.updateObjectArrayShortByProperty(new String[]{"ship"}, new Object[]{null},
+				new String[]{"game", "player1"}, new Object[]{game, player1});
+	}
+	
+	@Override
+	public ShootResult shoot(Game game, Coordinates target, Boolean player1) {
+		List<Cell> cells = cell_dao.getByPropertiesValuePortionOrdered(null, null,
+				new String[]{"game", "coordinates", "player1", "alive"}, 
+				new Object[]{game, target, player1, Boolean.TRUE},
+				0, 0, null, null);
+		if (cells.size()<1){
+			if (logger.isDebugEnabled()){
+				logger.debug("target was alerady hit: game "+game.getId()+", "+target+", player1"+player1+". wrong cells count");
+			}
+			return ShootResult.MISS;
 		}
+		Cell cell = cells.get(0);
+		cell.setAlive(Boolean.FALSE);
+		cell_dao.makePersistent(cell);
+		if (cell.getShip()==null){
+			return ShootResult.MISS;
+		} else {
+			cells = cell_dao.getByPropertiesValuePortionOrdered(null, null,
+					new String[]{"game", "ship", "player1", "alive"}, 
+					new Object[]{game, cell.getShip(), player1, Boolean.TRUE},
+					0, 0, null, null);
+			if (cells.size()>0){
+				return ShootResult.HIT;
+			} else {
+				return ShootResult.KILL;
+			}
+		}
+	}
+
+// -------------------------------- dependencies --------------------------
+	@Resource(name="cellDAO")
+	public void setCell_dao(IGenericDAO<Cell, Long> value){
+		this.cell_dao = value;
+	}
+
+	@Resource(name="shipDAO")
+	public void setShip_dao(IGenericDAO<Ship, Long> value){
+		this.ship_dao = value;
+	}
+
+	@Resource(name="shipCollisionHandler")
+	public void setShipCollisionHandler(IShipCollisionHandler value){
+		this.ship_collision_handler = value;
+	}
 }

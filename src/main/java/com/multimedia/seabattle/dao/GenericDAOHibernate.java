@@ -386,6 +386,38 @@ public class GenericDAOHibernate<T, ID extends Serializable> implements IGeneric
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public int updateObjectArrayShortByProperty(String[] propertyNames, Object[] propertyValues,
+			String[] property, Object[] values)
+	{
+		if (propertyNames==null||values==null||propertyValues==null||
+				propertyNames.length==0||values.length==0||propertyValues.length!=propertyNames.length){
+			return -1;
+		}
+
+		int rez = 0;
+		//actually creating hql
+		StringBuilder hql = new StringBuilder("update ");
+		hql.append(entityName);
+		HQLPartGenerator.getValuesListForUpdateNumbers(propertyNames, hql);
+		HQLPartGenerator.getWhereManyColumns(property, values, hql);
+
+		Session sess = this.getSessionFactory().getCurrentSession();
+
+		Query q = sess.createQuery(hql.toString());
+		//appending values
+		for (int j=0;j<propertyNames.length;j++){
+			q = q.setParameter(j, propertyValues[j]);
+		}
+
+		HQLPartGenerator.appendPropertiesValue(values, q);
+
+		rez+= q.executeUpdate();
+
+		return rez;
+		
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public int updatePropertiesById(String[] propertyNames, Object[] propertyValues, ID id) {
 		if (propertyNames==null||id==null||propertyValues==null||
 				propertyNames.length==0||propertyValues.length!=propertyNames.length){

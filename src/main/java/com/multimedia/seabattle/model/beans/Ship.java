@@ -70,8 +70,10 @@ public class Ship {
 
 	@Override
 	public String toString() {
-		return "Ship [id=" + id + ", length=" + length + ", game=" + game
-				+ ", player1=" + player1 + "]";
+		return "Ship [id=" + id +
+			", length=" + length +
+			", game=" + (game==null?"null":game.getId()) +
+			", player1=" + player1 + "]";
 	}
 
 }

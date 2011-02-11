@@ -1,10 +1,12 @@
 package com.multimedia.seabattle.service.ships;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.model.types.GameShipType;
+import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipType;
 
 /**
@@ -60,14 +63,13 @@ public class ClassicGameShips implements IGameShips{
 	}
 
 	@Override
-	public Set<ShipType> getValidShipTypes(Map<Integer, Integer> quantity) {
+	public Set<ShipType> getValidShipTypes(Collection<Integer> ships) {
+		Map<Integer, Integer> tmp = getInvalidShipTypes(ships);
 		EnumSet<ShipType> ships_left = EnumSet.<ShipType>noneOf(ShipType.class);
 		Iterator<ShipType> i = valid_ships.iterator();
 		while(i.hasNext()){
 			ShipType type = i.next();
-			Integer q = quantity.get(type.getValue());
-			q = q==null?0:q;
-			if (q < size_quantity.get(type.getValue())){
+			if (tmp.get(type.getValue()) > 0){
 				ships_left.add(type);
 			}
 		}
@@ -75,30 +77,44 @@ public class ClassicGameShips implements IGameShips{
 	}
 
 	@Override
-	public Map<Integer, Integer> getInvalidShipTypes(Map<ShipType, Integer> quantity) {
-		EnumSet<ShipType> ships_wrong = EnumSet.<ShipType>noneOf(ShipType.class);
-		ships_wrong.addAll(quantity.keySet());
-		Set<ShipType> types_valid = valid_ships.clone();
-		ships_wrong.removeAll(types_valid);
-		if (ships_wrong.size()>0){
-			//this means that the game already contains wrong ships
-			return null;
-		}
-
-		Iterator<ShipType> i = types_valid.iterator();
+	public Map<Integer, Integer> getInvalidShipTypes(Collection<Integer> ships) {
 		Map<Integer, Integer> tmp = new HashMap<Integer, Integer>(size_quantity);
-		while(i.hasNext()){
-			ShipType type = i.next();
-			Integer q = quantity.get(type);
-			Integer quantity_cur = tmp.get(type.getValue());
+
+		for (Integer ship:ships){
+			Integer quantity_cur = tmp.get(ship);
 			if (quantity_cur==null){
-				tmp.put(type.getValue(), -q);
+				//TODO: an error must be here
 			} else {
-				tmp.put(type.getValue(), quantity_cur - q);
+				tmp.put(ship, quantity_cur - 1);
 			}
 		}
 
 		return tmp;
+	}
+
+	@Override
+	public PlayerReadyType checkShips(List<Integer> ships){
+		Iterator<Entry<Integer, Integer>> tmp = getInvalidShipTypes(ships).entrySet().iterator();
+		PlayerReadyType res = PlayerReadyType.READY;
+		while(tmp.hasNext()){
+			Entry<Integer, Integer> item = tmp.next();
+			if (item.getValue()==0){
+				
+			} else if (item.getValue()>0){
+				if (res == PlayerReadyType.HAS_TOO_MANY_SHIPS){
+					return PlayerReadyType.HAS_WRONG_SHIPS;
+				} else {
+					res = PlayerReadyType.HAS_NOT_ENOUGH_SHIPS;
+				}
+			} else {
+				if (res == PlayerReadyType.HAS_NOT_ENOUGH_SHIPS){
+					return PlayerReadyType.HAS_WRONG_SHIPS;
+				} else {
+					res = PlayerReadyType.HAS_TOO_MANY_SHIPS;
+				}
+			}
+		}
+		return res;
 	}
 
 	@Override
