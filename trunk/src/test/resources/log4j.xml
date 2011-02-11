@@ -40,6 +40,26 @@
 		<level value="error" />
 	</logger>
 
+	<logger name="com.multimedia.seabattle.service.ships.ClassicGameShips">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.service.ships.ShipBuilder">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.service.collisions.ClassicShipCollision">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.service.battlefield.HashBattlefield">
+		<level value="info" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.service.ships.RandomGeneratorDelegate">
+		<level value="info" />
+	</logger>
+
 	<!-- Root Logger -->
 	<root>
 		<priority value="info" />

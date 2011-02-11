@@ -95,5 +95,14 @@ public class Cell {
 	public Coordinates getCoordinates() {
 		return coordinates;
 	}
+	@Override
+	public String toString() {
+		return "Cell [id=" + id +
+			", game=" + (game==null?"null":game.getId()) +
+			", ship=" + (ship==null?"null":ship.getId()) +
+			", coordinates=" + coordinates +
+			", player1=" + player1 +
+			", alive=" + alive + "]";
+	}
 
 }

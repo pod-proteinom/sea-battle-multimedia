@@ -1,10 +1,12 @@
 package com.multimedia.seabattle.service.ships;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.multimedia.seabattle.model.types.GameShipType;
+import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipType;
 
 /**
@@ -38,16 +40,22 @@ public interface IGameShips {
 	public Set<ShipType> getValidShipTypes();
 
 	/**
-	 * checks whether any ship that is not allowed by the game rules is set.
-	 * @param quantity ships that are already deployed on the battlefield
-	 * @return ship type values that must be removed(if>0), added (if<0).
+	 * checks whether player has set all needed ship values.
+	 * if resulting map contains only 0 values, that means that player has set up all ships right.
+	 * @param ships that are already deployed on the battlefield
+	 * @return ship type values that must be removed(if<0), added (if>0).
 	 */
-	public Map<Integer, Integer> getInvalidShipTypes(Map<ShipType, Integer> quantity);
+	public Map<Integer, Integer> getInvalidShipTypes(Collection<Integer> ships);
 
 	/**
 	 * get valid ship types for this game type, ordered by length.
-	 * @param quantity ships that are already deployed on the battlefield
+	 * @param ships that are already deployed on the battlefield
 	 * @return valid ShipTypes that must be deployed.
 	 */
-	public Set<ShipType> getValidShipTypes(Map<Integer, Integer> quantity);
+	public Set<ShipType> getValidShipTypes(Collection<Integer> ships);
+
+	/**
+	 * checks if player has deployed all necessary ships
+	 */
+	public PlayerReadyType checkShips(List<Integer> ships);
 }

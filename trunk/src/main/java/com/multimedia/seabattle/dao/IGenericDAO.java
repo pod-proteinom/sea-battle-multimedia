@@ -108,6 +108,16 @@ import org.hibernate.ScrollableResults;
     public int updateObjectArrayShortByProperty(String[] propertyNames, Object[] propertyValues, String property, Object[] values);
 
 	/**
+	 * updates propertyNames to propertyValues in all entities with property = Values
+	 * @param propertyNames names of properties to update
+	 * @param propertyValues new values
+	 * @param property name
+	 * @param values values
+	 * @return
+	 */
+    public int updateObjectArrayShortByProperty(String[] propertyNames, Object[] propertyValues, String[] property, Object[] values);
+
+	/**
 	 *
 	 * @param propertyNames names of properties to update
 	 * @param propertyValues values to be set

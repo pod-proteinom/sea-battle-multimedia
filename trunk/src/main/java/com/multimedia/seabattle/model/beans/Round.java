@@ -12,7 +12,10 @@ package com.multimedia.seabattle.model.beans;
 
 import java.util.Date;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -38,10 +41,12 @@ public class Round {
 	@OnDelete(action=OnDeleteAction.CASCADE)
 	private Game game;
 
-	@ManyToOne
-	@org.hibernate.annotations.ForeignKey(name="FK_round_cell")
-	@JoinColumn(name="id_cell")
-	private Cell cell;
+	@Embedded
+	@AttributeOverrides( {
+           @AttributeOverride(name="x", column = @Column(name="x")) ,
+           @AttributeOverride(name="y", column = @Column(name="y")) 
+   } )
+	private Coordinates coordinates;
 
 	private Integer number;
 
@@ -79,14 +84,6 @@ public class Round {
 		return game;
 	}
 
-	public void setCell(Cell cell) {
-		this.cell = cell;
-	}
-
-	public Cell getCell() {
-		return cell;
-	}
-
 	public void setNumber(Integer number) {
 		this.number = number;
 	}
@@ -101,6 +98,14 @@ public class Round {
 
 	public Date getStarted() {
 		return started;
+	}
+
+	public void setCoordinates(Coordinates coordinates) {
+		this.coordinates = coordinates;
+	}
+
+	public Coordinates getCoordinates() {
+		return coordinates;
 	}
 
 }

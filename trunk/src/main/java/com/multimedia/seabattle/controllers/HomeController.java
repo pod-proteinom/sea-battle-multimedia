@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.multimedia.seabattle.dao.IGenericDAO;
-import com.multimedia.seabattle.model.beans2.Country;
+import com.multimedia.seabattle.model.beans.Country;
 
 /**
  * Handles requests for the application home page.
