@@ -180,6 +180,69 @@ public class BattlefieldServiceTest {
 		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 7), Boolean.FALSE));
 		assertEquals("we kill the target but result was other", ShootResult.KILL, battlefield_service.shoot(game, new Coordinates(8, 8), Boolean.FALSE));
 	}
+
+	/**
+	 * test whether a player has more ships
+	 * 	if player has
+	 * 1) place a ship
+	 * 2) kill it
+	 * 3) check
+	 */
+	@Test
+	public void testPlayerHasMoreShipsYes(){
+		List<Cell> cells = battlefield_service.getBattlefield(game, Boolean.FALSE);
+		{
+			Coordinates[] new_ship = new Coordinates[4];
+			for (int i=85, k=0; i<89; i++){
+				new_ship[k++] = cells.get(i).getCoordinates();
+			}
+			Ship ship = new Ship();
+			battlefield_service.deployShip(new_ship, game, Boolean.FALSE, ship);
+		}
+
+		{
+			Coordinates[] new_ship = new Coordinates[4];
+			for (int i=11, k=0; i<15; i++){
+				new_ship[k++] = cells.get(i).getCoordinates();
+			}
+			Ship ship = new Ship();
+			battlefield_service.deployShip(new_ship, game, Boolean.FALSE, ship);
+		}
+
+		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 5), Boolean.FALSE));
+		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 6), Boolean.FALSE));
+		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 7), Boolean.FALSE));
+		assertEquals("we kill the target but result was other", ShootResult.KILL, battlefield_service.shoot(game, new Coordinates(8, 8), Boolean.FALSE));
+
+		assertTrue("player has more ships", battlefield_service.hasMoreShips(game, Boolean.FALSE));
+	}
+
+	/**
+	 * test whether a player has more ships
+	 * 	if player has not
+	 * 1) place a ship
+	 * 2) kill it
+	 * 3) check
+	 */
+	@Test
+	public void testPlayerHasMoreShipsNot(){
+		List<Cell> cells = battlefield_service.getBattlefield(game, Boolean.FALSE);
+		{
+			Coordinates[] new_ship = new Coordinates[4];
+			for (int i=85, k=0; i<89; i++){
+				new_ship[k++] = cells.get(i).getCoordinates();
+			}
+			Ship ship = new Ship();
+			battlefield_service.deployShip(new_ship, game, Boolean.FALSE, ship);
+		}
+
+		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 5), Boolean.FALSE));
+		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 6), Boolean.FALSE));
+		assertEquals("we hit the target but result was other", ShootResult.HIT, battlefield_service.shoot(game, new Coordinates(8, 7), Boolean.FALSE));
+		assertEquals("we kill the target but result was other", ShootResult.KILL, battlefield_service.shoot(game, new Coordinates(8, 8), Boolean.FALSE));
+
+		assertFalse("player has no more ships", battlefield_service.hasMoreShips(game, Boolean.FALSE));
+	}
 	
 
 	@Required

@@ -13,7 +13,6 @@ import com.multimedia.seabattle.model.types.ShipType;
  * defines the base point for detecting if a given ship type is valid
  * and total size/quantity of ships that must be used in the game
  * @author Dmitriy_Demchuk
- *
  */
 public interface IGameShips {
 	/**
