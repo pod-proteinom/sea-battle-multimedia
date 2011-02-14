@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.dao.IGenericDAO;
+import com.multimedia.seabattle.dao.cell.ICellDAO;
 import com.multimedia.seabattle.model.beans.Cell;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
@@ -26,7 +27,7 @@ import com.multimedia.seabattle.service.ships.IShipGenerator;
 public class BattlefieldServiceImpl implements IBattlefieldService{
 
 	private static final Logger logger = LoggerFactory.getLogger(BattlefieldServiceImpl.class);
-	private IGenericDAO<Cell, Long> cell_dao;
+	private ICellDAO cell_dao;
 	private IGenericDAO<Ship, Long> ship_dao;
 
 	private IShipCollisionHandler ship_collision_handler;
@@ -162,22 +163,37 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 		cell_dao.makePersistent(cell);
 		if (cell.getShip()==null){
 			return ShootResult.MISS;
+		} else if (isShipAlive(game, player1, cell.getShip())){
+			return ShootResult.HIT;
 		} else {
-			cells = cell_dao.getByPropertiesValuePortionOrdered(null, null,
-					new String[]{"game", "ship", "player1", "alive"}, 
-					new Object[]{game, cell.getShip(), player1, Boolean.TRUE},
-					0, 0, null, null);
-			if (cells.size()>0){
-				return ShootResult.HIT;
-			} else {
-				return ShootResult.KILL;
-			}
+			return ShootResult.KILL;
 		}
+	}
+
+	/**
+	 * checks whether the ship of a player is alive in given game
+	 * @return true is alive
+	 */
+	private boolean isShipAlive(Game game, Boolean player1, Ship ship){
+		return cell_dao
+			.getRowCount(
+				new String[]{"game", "ship", "player1", "alive"}, 
+				new Object[]{game, ship, player1, Boolean.TRUE})
+			>0;
+	}
+
+	@Override
+	public boolean hasMoreShips(Game game, Boolean player1) {
+		return cell_dao.getShipAliveCells(game, player1)>0;
+			/*.getRowCount(
+				new String[]{"game", "player1", "alive"}, 
+				new Object[]{game, player1, Boolean.TRUE})
+			>0;*/
 	}
 
 // -------------------------------- dependencies --------------------------
 	@Resource(name="cellDAO")
-	public void setCell_dao(IGenericDAO<Cell, Long> value){
+	public void setCell_dao(ICellDAO value){
 		this.cell_dao = value;
 	}
 

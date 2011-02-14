@@ -68,4 +68,10 @@ public interface IBattlefieldService {
 	 * @return result of shooting
 	 */
 	public ShootResult shoot(Game game, Coordinates target, Boolean player1);
+
+	/**
+	 * checks whether a player1 has more alive ships in the game
+	 * @return true is has
+	 */
+	public boolean hasMoreShips(Game game, Boolean player1);
 }

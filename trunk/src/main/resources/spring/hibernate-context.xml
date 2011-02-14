@@ -67,9 +67,9 @@
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
-  	<bean id="cellDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Cell"/>
-  		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Cell"/>
+  	<bean id="cellDAO" class="com.multimedia.seabattle.dao.cell.CellDAOHibernate">
+  		<!-- constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Cell"/>
+  		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Cell"/-->
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 

@@ -20,12 +20,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
+@NamedQuery(
+		name="shipAliveCells",
+		query="select count(*) from com.multimedia.seabattle.model.beans.Cell where game = :game and player1 = :player1 and ship is not null and alive = true")
 public class Cell {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

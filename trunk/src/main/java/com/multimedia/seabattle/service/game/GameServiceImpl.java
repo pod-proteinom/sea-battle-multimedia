@@ -18,9 +18,11 @@ import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Ship;
 import com.multimedia.seabattle.model.types.GameShipType;
+import com.multimedia.seabattle.model.types.GameTurnResult;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
+import com.multimedia.seabattle.model.types.ShootResult;
 import com.multimedia.seabattle.service.battlefield.BattlefieldServiceImpl;
 import com.multimedia.seabattle.service.battlefield.IBattlefieldService;
 import com.multimedia.seabattle.service.ships.IGameShips;
@@ -181,6 +183,31 @@ public class GameServiceImpl implements IGameService{
 		}
 		return true;
 	}
+
+	@Override
+	public GameTurnResult makeTurn(Game game, Boolean player1,
+			Coordinates target) {
+		ShootResult res;
+		if (player1){
+			res = battlefield_service.shoot(game, target, Boolean.FALSE);
+		} else {
+			res = battlefield_service.shoot(game, target, Boolean.TRUE);
+		}
+		switch (res){
+			case HIT:
+				return GameTurnResult.HIT;
+			case MISS:
+				return GameTurnResult.MISS;
+			case KILL:
+				break;
+			default:
+				throw new UnsupportedOperationException("player has not hit, miss or kill that is impossible");
+		}
+		throw new UnsupportedOperationException("not implemented yet");
+		//return null;
+	}
+
+	
 
 // -------------------------------- dependencies --------------------------
 	@Resource(name="gameDAO")

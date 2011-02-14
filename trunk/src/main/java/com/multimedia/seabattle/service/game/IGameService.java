@@ -2,6 +2,7 @@ package com.multimedia.seabattle.service.game;
 
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.types.GameTurnResult;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
@@ -62,4 +63,11 @@ public interface IGameService {
 	 * generate ships in a given game for given player using given ship generator
 	 */
 	public boolean generatePlayerShips(Game game, Boolean player1, IShipGenerator generator);
+
+	/**
+	 * a player makes its turn, and shoots
+	 * @param player1 player that makes its turn
+	 * @param target where player1 shoots
+	 */
+	public GameTurnResult makeTurn(Game game, Boolean player1, Coordinates target);
 }
