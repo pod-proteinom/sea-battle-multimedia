@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>DWR Dev</title>
+		<script type="text/javascript" src="/seabattle/dwr/engine.js"></script>
+		<script type="text/javascript" src="/seabattle/dwr/util.js"></script>
+		<script type="text/javascript" src="/seabattle/dwr/interface/DwrTestService.js"></script>
+		<script>
+			window.onload=function()
+			{
+			    dwr.engine.setActiveReverseAjax(true); // Initiate reverse ajax polling
+			    dwr.engine.setErrorHandler(errorHandler); // Optional - Called when a call and all retry attempts fail
+			    //dwr.engine.setPollStatusHandler(updatePollStatus); // Optional - function to call when the reverse ajax status changes (e.g. online to offline)
+			    updatePollStatus(true); // Optional - We are online right now!  Until DWR determines we are not!
+			    //Tabs.init('tabList', 'tabContents'); // Initialize the tabs for this display      
+			}
+			function getDataFromServer() {
+			  DwrTestService.getTestBean({
+			  	callback: getDataFromServerCallBack
+			  });
+			}
+			
+			function getDataFromServerCallBack(dataFromServer) {
+			  alert(dwr.util.toDescriptiveString(dataFromServer,3));
+			}
+				  
+			function errorHandler(message, ex) {
+			    dwr.util.setValue("error", "<font color='red'>Cannot connect to server. Initializing retry logic.</font>", {escapeHtml:false});
+			    setTimeout(function() { dwr.util.setValue("error", ""); }, 5000)
+			}
+				  
+			//function updatePollStatus(pollStatus) {
+			//    dwr.util.setValue("pollStatus", pollStatus ? "<font color='green'>Online</font>" : "<font color='red'>Offline</font>", {escapeHtml:false});
+			//}
+		</script>
+	</head>
+	<body>
+		<h3>DWR/Spring and Spring MVC</h3>
+		<a href="#" onclick="getDataFromServer(); return false;">Retrieve test data</a><br/>
+		<input type="button" onclick="getDataFromServer()" value="click me">
+		<input type="button" onclick="DwrTestService.getTestBean()" value="click me2">
+		<div id="msg">empty</div>
+	</body>
+</html>

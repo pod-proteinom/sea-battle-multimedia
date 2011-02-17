@@ -185,10 +185,6 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 	@Override
 	public boolean hasMoreShips(Game game, Boolean player1) {
 		return cell_dao.getShipAliveCells(game, player1)>0;
-			/*.getRowCount(
-				new String[]{"game", "player1", "alive"}, 
-				new Object[]{game, player1, Boolean.TRUE})
-			>0;*/
 	}
 
 // -------------------------------- dependencies --------------------------

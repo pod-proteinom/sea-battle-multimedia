@@ -10,11 +10,6 @@
 		</layout>
 	</appender>
 	
-	<!-- Application Loggers -->
-	<logger name="com.multimedia.seabattle">
-		<level value="info" />
-	</logger>
-	
 	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">
 		<level value="info" />
@@ -46,6 +41,18 @@
 
 	<logger name="com.multimedia.seabattle.service.collisions.ClassicShipCollision">
 		<level value="info" />
+	</logger>
+
+	<logger name="org.directwebremoting">
+		<level value="error" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.dwr.RoundTimer">
+		<level value="error"/>
+	</logger>
+
+	<logger name="com.multimedia.seabattle.dwr.Timer">
+		<level value="error"/>
 	</logger>
 
 	<!-- Root Logger -->

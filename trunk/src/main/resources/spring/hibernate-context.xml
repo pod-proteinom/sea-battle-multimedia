@@ -2,19 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:tx="http://www.springframework.org/schema/tx"
-    xmlns:p="http://www.springframework.org/schema/p"
     xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-          p:driverClassName="${jdbc.connection.driver_class}"
-          p:url="${jdbc.connection.url}"
-          p:username="${jdbc.connection.username}"
-          p:password="${jdbc.connection.password}"
-		  p:validationQuery="${jdbc.dbcp.validationQuery}"
-		  p:testOnBorrow="${jdbc.dbcp.testOnBorrow}"/>
+	    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+	    	<property name="driverClassName" value="${jdbc.connection.driver_class}"/>
+          	<property name="url" value="${jdbc.connection.url}"/>
+          	<property name="username" value="${jdbc.connection.username}"/>
+          	<property name="password" value="${jdbc.connection.password}"/>
+          	<property name="validationQuery" value="select 1"/>
+          	<property name="testOnBorrow" value="true"/>
+		  </bean>
 
     <!-- Hibernate SessionFactory -->
 
@@ -73,9 +73,9 @@
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 
-  	<bean id="roundDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Round"/>
-  		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Round"/>
+  	<bean id="roundDAO" class="com.multimedia.seabattle.dao.round.RoundDAOHibernate">
+  		<!--constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Round"/>
+  		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Round"/-->
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 </beans>

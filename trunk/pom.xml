@@ -17,6 +17,7 @@
 		<org.springframework.roo-version>1.0.2.RELEASE</org.springframework.roo-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
+		<org.directwebremoting-version>3.0.0-rc2-SNAPSHOT</org.directwebremoting-version>
 	</properties>
 	<dependencies>
 		<!-- Spring -->
@@ -42,6 +43,43 @@
 			<artifactId>spring-test</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+		<!-- DWR direct web remoting - for server side pushing the client  -->
+		<dependency>
+  			<groupId>org.directwebremoting</groupId>
+  			<artifactId>dwr-core</artifactId>
+  			<version>${org.directwebremoting-version}</version>
+  			<type>jar</type>
+  			<scope>compile</scope>
+		</dependency>
+		<dependency>
+  			<groupId>org.directwebremoting</groupId>
+  			<artifactId>dwr-spring</artifactId>
+  			<version>${org.directwebremoting-version}</version>
+  			<type>jar</type>
+  			<scope>compile</scope>
+		</dependency>
+		<dependency>
+  			<groupId>org.directwebremoting</groupId>
+  			<artifactId>dwr-protocol-dwrp</artifactId>
+  			<version>${org.directwebremoting-version}</version>
+  			<type>jar</type>
+  			<scope>compile</scope>
+		</dependency>
+		<dependency>
+  			<groupId>org.directwebremoting</groupId>
+  			<artifactId>dwr-protocol-json</artifactId>
+  			<version>${org.directwebremoting-version}</version>
+  			<type>jar</type>
+  			<scope>compile</scope>
+		</dependency>
+		<dependency>
+  			<groupId>org.directwebremoting</groupId>
+  			<artifactId>dwr-ui-dwr</artifactId>
+  			<version>${org.directwebremoting-version}</version>
+  			<type>jar</type>
+  			<scope>compile</scope>
+		</dependency>
+		
 		<!-- Roo dependencies -->
 		<dependency>
 			<groupId>org.springframework.roo</groupId>
@@ -78,7 +116,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.16</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.mail</groupId>
@@ -161,7 +199,7 @@
 		<dependency>
    			<groupId>commons-dbcp</groupId>
     		<artifactId>commons-dbcp</artifactId>
-    		<version>1.2.2</version>
+    		<version>1.4</version>
 		</dependency>
 		
 		
@@ -177,8 +215,9 @@
 		<dependency>
     		<groupId>mysql</groupId>
     		<artifactId>mysql-connector-java</artifactId>
-    		<version>5.1.6</version>
-		</dependency>
+    		<version>5.1.15</version>
+			<scope>test</scope>
+		</dependency>		
 		
 		
 	</dependencies>
@@ -213,6 +252,13 @@
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
           </snapshots>
+        </repository>
+		<!-- dwr repository -->
+        <repository>
+          <id>org.directwebremoting</id>
+          <name>Direct web remoting repository</name>
+          <url>http://repo.directwebremoting.org/nexus/content/repositories/dwr-snapshots</url>
+          <layout>default</layout>
         </repository>
 		
 	</repositories>
@@ -292,10 +338,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
-				<version>1.0-beta-1</version>
+				<version>1.1</version>
 				<configuration>
-                   <server>tomcat-standart</server>
-               </configuration>
+                	<server>tomcat-standart</server>
+               	</configuration>
 			</plugin>
 		</plugins>
 	</build>
