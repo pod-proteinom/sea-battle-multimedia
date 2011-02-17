@@ -18,32 +18,30 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.multimedia.seabattle.dao.IGenericDAO;
-import com.multimedia.seabattle.model.beans.Country;
+import com.multimedia.seabattle.dwr.DwrTestService;
 
 /**
  * Handles requests for the application home page.
  */
 @Controller
 public class HomeController {
-	private IGenericDAO<Country, Long> dao;
+	private DwrTestService dwrTestService;
 
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
-	@RequestMapping(value="/", method=RequestMethod.GET)
+	@RequestMapping(value="/test.htm", method=RequestMethod.GET)
 	public String home() {
-		logger.info("Welcome home!");
-		logger.info(dao.getAllShortOrdered(null, null, null).toString());
-		return "home";
+		logger.info("Time updated");
+		dwrTestService.updateClock("time:"+System.currentTimeMillis());
+		return "/WEB-INF/views/home.jsp";
 	}
 
-
-	@Resource(name="countryDAO")
-	public void setDao(IGenericDAO<Country, Long> dao) {
-		this.dao = dao;
+	@Resource(name="DwrTestService")
+	public void setDwrService(DwrTestService value){
+		this.dwrTestService = value;
 	}
 
 	

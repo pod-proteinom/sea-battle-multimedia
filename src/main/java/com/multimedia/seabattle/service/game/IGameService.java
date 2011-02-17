@@ -2,7 +2,7 @@ package com.multimedia.seabattle.service.game;
 
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
-import com.multimedia.seabattle.model.types.GameTurnResult;
+import com.multimedia.seabattle.model.beans.TurnResult;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
@@ -35,13 +35,6 @@ public interface IGameService {
 	public boolean startGame(Game game);
 
 	/**
-	 * sets game end time to cur, sets winner
-	 * ends the game
-	 * return false if no winners found
-	 */
-	public boolean endGame(Game game);
-
-	/**
 	 * deletes the game with given id from the database
 	 */
 	public boolean deleteGame(Long id);
@@ -65,9 +58,15 @@ public interface IGameService {
 	public boolean generatePlayerShips(Game game, Boolean player1, IShipGenerator generator);
 
 	/**
+	 * get a player that will make its turn first
+	 */
+	public Boolean firstTurn(Game game);
+
+	/**
 	 * a player makes its turn, and shoots
 	 * @param player1 player that makes its turn
 	 * @param target where player1 shoots
+	 * @return turn result(shoot result + round result)
 	 */
-	public GameTurnResult makeTurn(Game game, Boolean player1, Coordinates target);
+	public TurnResult makeTurn(Game game, Boolean player1, Coordinates target);
 }

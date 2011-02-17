@@ -10,12 +10,6 @@
 		</layout>
 	</appender>
 	
-	<!-- Application Loggers -->
-	<logger name="com.multimedia.seabattle">
-		<level value="info" />
-	</logger>
-	
-	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">
 		<level value="info" />
 	</logger>	
@@ -28,11 +22,12 @@
 		<level value="info" />
 	</logger>
 
+	<!-- Application Loggers -->
 	<logger name="org.springframework.web">
 		<level value="info" />
 	</logger>
 
-	<logger name="com.multimedia.seabattle">
+	<logger name="com.multimedia.seabattle.service.game.GameServiceImpl">
 		<level value="debug" />
 	</logger>
 
@@ -58,6 +53,10 @@
 
 	<logger name="com.multimedia.seabattle.service.ships.RandomGeneratorDelegate">
 		<level value="info" />
+	</logger>
+
+	<logger name="com.multimedia.seabattle.service.battlefield.BattlefieldServiceImpl">
+		<level value="info"/>
 	</logger>
 
 	<!-- Root Logger -->

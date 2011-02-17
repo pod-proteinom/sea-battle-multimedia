@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<title>Round timer</title>
+		<script type="text/javascript" src="/seabattle/dwr/engine.js"></script>
+		<script type="text/javascript" src="/seabattle/dwr/util.js"></script>
+		<script type="text/javascript" src="/seabattle/dwr/interface/RoundTimer.js"></script>
+		<script>
+			window.onload=function()
+			{
+			    dwr.engine.setActiveReverseAjax(true); // Initiate reverse ajax polling
+			    dwr.engine.setErrorHandler(errorHandler); // Optional - Called when a call and all retry attempts fail
+			    //dwr.engine.setPollStatusHandler(updatePollStatus); // Optional - function to call when the reverse ajax status changes (e.g. online to offline)
+			    //updatePollStatus(true); // Optional - We are online right now!  Until DWR determines we are not!
+			    //Tabs.init('tabList', 'tabContents'); // Initialize the tabs for this display
+			    addAttributeToScriptSession();
+			}
+				  
+			function errorHandler(message, ex) {
+			    dwr.util.setValue("error", "<font color='red'>Cannot connect to server. Initializing retry logic.</font>", {escapeHtml:false});
+			    setTimeout(function() { dwr.util.setValue("error", ""); }, 5000)
+			}
+			
+			function addAttributeToScriptSession(){
+				session_id = (new Date()).getTime();
+				RoundTimer.startNewRound(""+session_id);
+			}
+				  
+			//function updatePollStatus(pollStatus) {
+			//    dwr.util.setValue("pollStatus", pollStatus ? "<font color='green'>Online</font>" : "<font color='red'>Offline</font>", {escapeHtml:false});
+			//}
+		</script>
+	</head>
+	<body>
+		<h3>DWR/Spring and Spring MVC</h3>
+		<div id="roundTime">empty</div>
+	</body>
+</html>

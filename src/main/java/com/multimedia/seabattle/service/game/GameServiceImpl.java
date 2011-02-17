@@ -11,20 +11,23 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.beans.TurnResult;
 import com.multimedia.seabattle.model.types.GameShipType;
-import com.multimedia.seabattle.model.types.GameTurnResult;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
+import com.multimedia.seabattle.model.types.RoundResult;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
 import com.multimedia.seabattle.model.types.ShootResult;
-import com.multimedia.seabattle.service.battlefield.BattlefieldServiceImpl;
 import com.multimedia.seabattle.service.battlefield.IBattlefieldService;
+import com.multimedia.seabattle.service.computer.IComputerPlayer;
+import com.multimedia.seabattle.service.round.IRoundService;
 import com.multimedia.seabattle.service.ships.IGameShips;
 import com.multimedia.seabattle.service.ships.IShipBuilder;
 import com.multimedia.seabattle.service.ships.IShipGenerator;
@@ -32,13 +35,15 @@ import com.multimedia.seabattle.service.ships.IShipGenerator;
 @Service("gameService")
 public class GameServiceImpl implements IGameService{
 
-	private static final Logger logger = LoggerFactory.getLogger(BattlefieldServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 
 	private IGenericDAO<Game, Long> game_dao;
 	private IGenericDAO<Ship, Long> ship_dao;
 
 	private IBattlefieldService battlefield_service;
 	private IShipBuilder ship_builder;
+
+	private IRoundService round_service;
 
 	private EnumMap<GameShipType, IGameShips> game_ships = new EnumMap<GameShipType, IGameShips>(GameShipType.class);
 
@@ -55,7 +60,7 @@ public class GameServiceImpl implements IGameService{
 
 		battlefield_service.createBattlefield(game);
 		if (logger.isDebugEnabled()){
-			logger.debug("create game ["+game.getId()+"] between ["+player_1_name+"] ["+player_2_name+"]");
+			logger.debug("create game ["+game.getId()+"] between ["+game.getPlayer1()+"] ["+game.getPlayer2()+"]");
 		}
 		return game;
 	}
@@ -66,26 +71,6 @@ public class GameServiceImpl implements IGameService{
 			logger.debug("deleting game ["+id+"]");
 		}
 		return game_dao.deleteById(id)==1;
-	}
-
-	@Override
-	public boolean endGame(Game game){
-		game.setEnded(new Timestamp(System.currentTimeMillis()));
-		Boolean winner = findWinner(game);
-		if (logger.isDebugEnabled()){
-			logger.debug("ending game ["+game.getId()+"] between ["+game.getPlayer1()+"] ["+game.getPlayer2()+"]");
-		}
-		if (winner!=null){
-			game.setWin1(winner);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private Boolean findWinner(Game game){
-		//TODO: implement
-		return Boolean.TRUE;
 	}
 
 	@Override
@@ -160,6 +145,11 @@ public class GameServiceImpl implements IGameService{
 	}
 
 	@Override
+	public Boolean firstTurn(Game game) {
+		return round_service.proceedRound(game);
+	}
+
+	@Override
 	public boolean generatePlayerShips(Game game, Boolean player1,
 			IShipGenerator generator)
 	{
@@ -185,54 +175,93 @@ public class GameServiceImpl implements IGameService{
 	}
 
 	@Override
-	public GameTurnResult makeTurn(Game game, Boolean player1,
+	public TurnResult makeTurn(Game game, Boolean player1,
 			Coordinates target) {
+		if (!round_service.proceedRound(game).equals(player1)){
+			if (logger.isDebugEnabled()){
+				logger.debug("turn wrong player ["+player1+"] game ["+game.getId()+"] target "+target);
+			}
+			return new TurnResult(RoundResult.TURN_WRONG, null);
+		}
 		ShootResult res;
 		if (player1){
 			res = battlefield_service.shoot(game, target, Boolean.FALSE);
 		} else {
 			res = battlefield_service.shoot(game, target, Boolean.TRUE);
 		}
+		if (logger.isDebugEnabled()){
+			logger.debug("turn player ["+player1+"] game ["+game.getId()+"] target "+target+" result: ["+res+"]");
+		}
 		switch (res){
 			case HIT:
-				return GameTurnResult.HIT;
+				return new TurnResult(
+						round_service.endRound(game, player1, target, Boolean.TRUE),
+						res);
 			case MISS:
-				return GameTurnResult.MISS;
+				return new TurnResult(
+						round_service.endRound(game, player1, target, Boolean.FALSE),
+						res);
 			case KILL:
 				break;
 			default:
 				throw new UnsupportedOperationException("player has not hit, miss or kill that is impossible");
 		}
-		throw new UnsupportedOperationException("not implemented yet");
-		//return null;
+		if (battlefield_service.hasMoreShips(game, player1)){
+			return new TurnResult(
+					round_service.endRound(game, player1, target, Boolean.TRUE),
+					res);
+		} else {
+			round_service.endRound(game, player1, target, Boolean.TRUE);
+
+			game.setEnded(new Timestamp(System.currentTimeMillis()));
+			game.setWin1(player1);
+			game_dao.makePersistent(game);
+
+			if (logger.isDebugEnabled()){
+				logger.debug("ending game ["+game.getId()+"] between ["+game.getPlayer1()+"] ["+game.getPlayer2()+"]"+" win="+game.getWin1());
+			}
+			return new TurnResult(
+					RoundResult.WIN,
+					res);
+		}
 	}
 
-	
 
 // -------------------------------- dependencies --------------------------
+	@Required
 	@Resource(name="gameDAO")
 	public void setGameDAO(IGenericDAO<Game, Long> value){
 		this.game_dao = value;
 	}
 
+	@Required
 	@Resource(name="shipDAO")
 	public void setShipDAO(IGenericDAO<Ship, Long> value){
 		this.ship_dao = value;
 	}
 
+	@Required
 	@Resource(name="battlefieldService")
 	public void setBattlefieldService(IBattlefieldService value){
 		this.battlefield_service = value;
 	}
 
+	@Required
 	@Resource(name="classicGameShips")
 	public void setClassicGameShips(IGameShips value){
 		this.game_ships.put(value.getGameType(), value);
 	}
 
+	@Required
 	@Resource(name="shipBuilder")
 	public void setShipBuilder(IShipBuilder value){
 		this.ship_builder = value;
+	}
+
+	@Required
+	@Resource(name="RoundServiceDB")
+	public void setRoundService(IRoundService round_service) {
+		this.round_service = round_service;
 	}
 
 }

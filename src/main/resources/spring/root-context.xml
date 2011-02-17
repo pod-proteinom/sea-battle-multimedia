@@ -15,7 +15,9 @@
             </list>
         </property>
     </bean>
-    
+
+    <import resource="hibernate-context.xml"/>
+
 	<context:component-scan base-package="com.multimedia.seabattle.service"/>
 
 </beans>

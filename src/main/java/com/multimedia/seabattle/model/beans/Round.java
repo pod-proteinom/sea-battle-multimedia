@@ -22,6 +22,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -30,6 +31,9 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
+@NamedQuery(
+		name="lastRound",
+		query="from com.multimedia.seabattle.model.beans.Round where game = :game and number = (select max(number) from com.multimedia.seabattle.model.beans.Round where game = :game)")
 public class Round {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
