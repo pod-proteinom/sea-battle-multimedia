@@ -43,9 +43,9 @@
   	<tx:annotation-driven transaction-manager="transactionManager"/>
   
   	<!-- daos -->
-  	<bean id="countryDAO" class="com.multimedia.seabattle.dao.GenericDAOHibernate">
-  		<constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Country"/>
-  		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Country"/>
+  	<bean id="countryDAO" class="com.multimedia.seabattle.dao.country.CountryDaoImpl">
+  		<!-- constructor-arg index="0" value="com.multimedia.seabattle.model.beans.Country"/>
+  		<constructor-arg index="1" value="com.multimedia.seabattle.model.beans.Country"/-->
   		<property name="sessionFactory" ref="sessionFactory"/>
   	</bean>
 

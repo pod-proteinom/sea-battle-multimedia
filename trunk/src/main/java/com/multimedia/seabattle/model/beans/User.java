@@ -24,14 +24,17 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class User {
+public class User extends com.multimedia.security.beans.User{
+
+	public User(){
+		super();
+	}
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+    private Long id;
 
 	private String name;
 	private String surname;
-	private String email;
 
 	@ManyToOne
 	@org.hibernate.annotations.ForeignKey(name="FK_user_country")
@@ -43,15 +46,8 @@ public class User {
 	@Column(updatable=false)
 	private Date date;
 
-	private String password;
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getId() {
-		return id;
-	}
+	public Long getId() {return id;}
+	public void setId(Long id) {this.id = id;}
 
 	public void setName(String name) {
 		this.name = name;
@@ -69,14 +65,6 @@ public class User {
 		return surname;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
 	public void setCountry(Country country) {
 		this.country = country;
 	}
@@ -92,12 +80,21 @@ public class User {
 	public Date getDate() {
 		return date;
 	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getPassword() {
-		return password;
+	/**
+	 * copies only simple types i.e. strings, long ...
+	 * @return
+	 */
+	public Object clone(){
+		User o = new User();
+		o.setEmail(this.getEmail());
+		o.setId(this.getId());
+		//o.id_pages = this.id_pages;
+		o.setLogin(this.getLogin());
+		//o.new_passwords = this.new_passwords;
+		//o.pages = this.pages;
+		o.setPassword(this.getPassword());
+		o.setPassword_repeat(this.getPassword_repeat());
+		//o.roles = this.roles;
+		return o;
 	}
 }
