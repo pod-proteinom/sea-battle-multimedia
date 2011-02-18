@@ -13,8 +13,9 @@
 	<context:annotation-config />
     <dwr:configuration>
     	<dwr:convert class="com.multimedia.seabattle.model.beans.DwrTestBean" type="bean"/>
+    	<dwr:convert class="com.multimedia.seabattle.model.beans.Country" type="bean"/>
     </dwr:configuration>
-    <dwr:annotation-config />
+    <dwr:annotation-config/>
     <dwr:url-mapping/>
     <dwr:controller id="dwrController" debug="true">
     	<!--dwr:config-param name="jsonpEnabled" value="true"/-->

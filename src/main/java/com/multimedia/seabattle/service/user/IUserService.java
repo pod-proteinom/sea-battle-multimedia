@@ -10,6 +10,24 @@
  ******************************************************************************/
 package com.multimedia.seabattle.service.user;
 
-public interface IUserService {
+import com.multimedia.seabattle.model.beans.User;
+import com.multimedia.security.services.ISecurityService;
+
+public interface IUserService extends ISecurityService{
+
+	/**
+	 * registers user in the system
+	 */
+	public boolean registerUser(User user);
+
+	/**
+	 * check whether you can use this login to register in a system
+	 */
+	public boolean checkUserLogin(String login);
+
+	/**
+	 * check whether you can use this email to register in a system
+	 */
+	public boolean checkUserEmail(String email);
 
 }

@@ -1,0 +1,27 @@
+td,span   {color: #000;font-family: tahoma, serif, arial;font-size: 9pt}
+img {border:0px;}
+body.main_frame{margin:2px 10px 80px 10px; padding: 0pt;font-family:tahoma;font-size: 9pt;color: #000;}
+a {color: #000;font-family: tahoma;font-size: 12px;text-decoration: underline;}
+
+a.link         {text-decoration: none;}
+a.link:visited {text-decoration: none;color: #000;}
+a.link:hover   {text-decoration: none;color: #000;}
+a.link:active  {text-decoration: none;color: #000;}
+a.link:link    {text-decoration: none;color: #000;}
+
+/* messages */
+.error_msg {color: red;font-size :13px;padding-top:1px;padding-bottom:1px;text-align:center;}
+.help_msg{color: green;font-size :13px;padding-top:1px;padding-bottom:1px;text-align:center;}
+/* messages */
+
+.bold   {font-weight:bold;}
+/* the head of the whole form (text) */
+div.form_frame{width: 800px;}
+
+.form_head      {color:#000;font-size:14px;font-weight:bold;}
+
+.form_head_row      {color:#333;font-size:16px;}
+.form_row_0     {background-color:#E0E0E0;}
+.form_row_1  	{background-color:#FFFFFF;}
+
+.long_text_area{width:700px;}
