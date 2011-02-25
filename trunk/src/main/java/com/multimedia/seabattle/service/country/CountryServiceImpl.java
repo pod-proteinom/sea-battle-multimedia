@@ -21,7 +21,17 @@ public class CountryServiceImpl implements ICountryService{
 	public List<Country> getCountries(String prefix) {
 		return country_dao.getCountries(prefix);
 	}
-	
+
+	@Override
+	public boolean checkCountry(Country country) {
+		Country c = country_dao.getById(country.getId());
+		if (c==null){
+			return false;
+		}
+		country.setName(c.getName());
+		country_dao.merge(c);
+		return true;
+	}
 //--------------------------------------------------------------------------
 	@Resource(name="countryDAO")
 	public void setCountryDao(ICountryDao value){

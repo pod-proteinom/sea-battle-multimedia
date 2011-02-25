@@ -15,6 +15,7 @@
           	<property name="validationQuery" value="select 1"/>
           	<property name="testOnBorrow" value="true"/>
 		  </bean>
+		 
 
     <!-- Hibernate SessionFactory -->
 

@@ -10,4 +10,9 @@ public interface ICountryService {
 	 * @return list of countries
 	 */
 	public List<Country> getCountries(String prefix);
+
+	/**
+	 * checks whether this is a valid country and refreshes it
+	 */
+	public boolean checkCountry(Country country);
 }

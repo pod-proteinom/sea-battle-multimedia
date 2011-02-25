@@ -12,6 +12,7 @@ package com.multimedia.seabattle.model.beans;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 
 @Entity
 public class User extends com.multimedia.security.beans.User{
@@ -29,6 +36,7 @@ public class User extends com.multimedia.security.beans.User{
 	public User(){
 		super();
 	}
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
@@ -36,11 +44,13 @@ public class User extends com.multimedia.security.beans.User{
 	private String name;
 	private String surname;
 
-	@ManyToOne
+	@ManyToOne(cascade={CascadeType.PERSIST})
 	@org.hibernate.annotations.ForeignKey(name="FK_user_country")
 	@JoinColumn(name="id_country")
 	private Country country;
 
+	@Past
+	@DateTimeFormat(iso=ISO.DATE)
 	@NotNull
 	@Temporal(TemporalType.DATE)
 	@Column(updatable=false)

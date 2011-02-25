@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.multimedia.seabattle.dao.util.HQLPartGenerator;
+import com.multimedia.seabattle.model.beans.Cell;
 
 /**
  *
@@ -34,7 +35,7 @@ import com.multimedia.seabattle.dao.util.HQLPartGenerator;
  */
 public class GenericDAOHibernate<T, ID extends Serializable> implements IGenericDAO<T, ID> {
 
-	protected final Logger logger = Logger.getLogger(getClass());
+	protected final Logger logger = Logger.getLogger(GenericDAOHibernate.class);
 
 	protected SessionFactory sessionFactory;
 
