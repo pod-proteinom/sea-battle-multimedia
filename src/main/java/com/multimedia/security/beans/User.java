@@ -2,13 +2,13 @@ package com.multimedia.security.beans;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  *
@@ -17,9 +17,12 @@ import org.hibernate.validator.constraints.Email;
 @MappedSuperclass
 public abstract class User{
 
+	@NotEmpty
 	@Email
     private String email;
+	@NotEmpty
     private String login;
+	@NotEmpty
     private String password;
 
     private Date last_accessed;

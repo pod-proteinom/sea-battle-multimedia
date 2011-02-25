@@ -1,0 +1,10 @@
+header=Регистрация пользователя
+required=Обязательное
+name=Имя
+surname=Фамилия
+country=Страна
+login=Логин
+password=Пароль
+password_repeat=Повтор пароля
+email=E-mail
+date=Дата

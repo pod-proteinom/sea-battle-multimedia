@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.User;
@@ -69,6 +70,7 @@ public class UserServiceImpl implements IUserService{
 	}
 
 //------------------------------------------------------------------------------------------------
+	@Required
 	@Resource(name="userDAO")
 	public void setDao(IGenericDAO<User, Long> dao) {
 		this.user_dao = dao;

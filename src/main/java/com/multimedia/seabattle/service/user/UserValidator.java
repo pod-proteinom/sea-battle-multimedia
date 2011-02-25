@@ -1,12 +1,7 @@
-package com.multimedia.seabattle.dwr;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.multimedia.seabattle.service.user;
 
 import javax.annotation.Resource;
 
-import org.directwebremoting.annotations.RemoteMethod;
-import org.directwebremoting.annotations.RemoteProxy;
 import org.hibernate.validator.constraints.impl.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.multimedia.seabattle.model.beans.Country;
 import com.multimedia.seabattle.service.country.ICountryService;
-import com.multimedia.seabattle.service.user.IUserService;
 
-@RemoteProxy(name="UserValidator")
 @Service("UserValidator")
-public class UserValidator {
+public class UserValidator implements IUserValidator{
 	private static final Logger logger = LoggerFactory.getLogger(UserValidator.class);
 
 	private IUserService user_service;
@@ -27,58 +20,54 @@ public class UserValidator {
 
 	private EmailValidator validator_email = new EmailValidator();
 
-	@RemoteMethod
 	public String validateLogin(final String login){
 		if (user_service.checkUserLogin(login)){
 			return null;
 		} else {
-			return "already_exists";
+			return "exists.login";
 		}
 	}
 
-	@RemoteMethod
 	public String validateEmail(final String email){
 		if (validator_email.isValid(email, null)){
 			if (user_service.checkUserEmail(email)){
 				return null;
 			} else {
-				return "already_exists";
+				return "exists.email";
 			}
 		} else {
-			return "invalid_email";
+			return "typeMismatch.email";
 		}
 	}
 
-	@RemoteMethod
 	public String validatePassword(final String password){
-		if (password.length()>5){
+		if (password!=null&&password.length()>5){
 			return null;
 		} else {
-			return "short";
+			return "password.simple";
 		}
 	}
 
-	@RemoteMethod
 	public String validatePassword_repeat(final String password, final String repeat){
 		if (password==null||!password.equals(repeat)){
-			return "not_match";
+			return "typeMismatch.password_repeat";
 		} else {
 			return null;
 		}
 	}
 
-	@RemoteMethod
-	public List<Country> getCountries(final String prefix){
-		if (prefix==null){
-			return new ArrayList<Country>();
+	@Override
+	public String validateCountry(Country country) {
+		if (country==null||(country.getId()==null&&country.getName()==null)){
+			return "required";
+		} else{
+			if (country_service.checkCountry(country)){
+				return null;
+			} else {
+				return "typeMismatch.country";
+			}
 		}
-		List<Country> list = country_service.getCountries(prefix);
-		if (logger.isDebugEnabled()){
-			logger.debug("getting countries"+list.toString());
-		}
-		return list;
 	}
-
 	
 //----------------------------------------------------------------------------------------------
 	@Required
@@ -92,4 +81,5 @@ public class UserValidator {
 	public void setCountryService(ICountryService value){
 		this.country_service = value;
 	}
+
 }
