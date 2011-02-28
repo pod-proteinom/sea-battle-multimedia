@@ -14,6 +14,23 @@
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	<mvc:interceptors>
 		<bean id="localeChangeInterceptor" class="com.multimedia.seabattle.i18n.LocaleChangeInterceptor"/>
+
+		<bean id="sessionPerRequestInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="flushModeName" value="FLUSH_NEVER"/>
+			<property name="singleSession" value="true"/>
+		</bean>
+		
+		<bean id="authorization" class="com.multimedia.security.interceptors.Authorization">
+			<property name="securityService" ref="userService"/>
+		</bean>
+
+		<mvc:interceptor>
+			<mvc:mapping path="/private/**"/>
+			<bean id="privateArea" class="com.multimedia.security.interceptors.Protected">
+				<property name="service" ref="userService"/>
+			</bean>
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 	<!-- Enables the Spring MVC @Controller programming model-->
@@ -30,23 +47,6 @@
 	<!-- bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
     </bean-->
 	<!-- bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-	</bean-->
-	<!--bean class = "org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name = "messageConverters">
-			<list>
-				<bean class = "org.springframework.http.converter.StringHttpMessageConverter">
-					<property name = "supportedMediaTypes">
-						<list>
-							<bean class="org.springframework.http.MediaType">
-      							<constructor-arg index="0" value="*"/>
-      							<constructor-arg index="1" value="*"/>
-      							<constructor-arg index="2" value="UTF-8"/>
-     						</bean>
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
 	</bean-->
 	<bean id="handlerAdapter2" class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
     <!-- bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">

@@ -25,7 +25,6 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -55,6 +54,8 @@ public class User extends com.multimedia.security.beans.User{
 	@Temporal(TemporalType.DATE)
 	@Column(updatable=false)
 	private Date date;
+
+	private Boolean active;
 
 	public Long getId() {return id;}
 	public void setId(Long id) {this.id = id;}
@@ -106,5 +107,11 @@ public class User extends com.multimedia.security.beans.User{
 		o.setPassword_repeat(this.getPassword_repeat());
 		//o.roles = this.roles;
 		return o;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	public Boolean getActive() {
+		return active;
 	}
 }

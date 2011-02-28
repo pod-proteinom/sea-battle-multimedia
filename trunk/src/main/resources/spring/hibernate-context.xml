@@ -34,12 +34,6 @@
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
 
-	<bean id="sessionPerRequestInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
-		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="flushModeName" value="FLUSH_NEVER"/>
-		<property name="singleSession" value="true"/>
-	</bean>
-
     <!-- enable the configuration of transactional behavior based on annotations -->
   	<tx:annotation-driven transaction-manager="transactionManager"/>
   

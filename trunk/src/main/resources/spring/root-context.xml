@@ -40,6 +40,25 @@
 	<property name="defaultLocale" value="ru"/>
 </bean>
 
+<!-- email -->
+	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from" value="Dmitriy_Demchuk@epam.com"/>
+	</bean>
+	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="EPHUBUDSA0035.epam.com"/>
+		<property name="username" value=""/>
+		<property name="password" value=""/>
+	</bean>
+
+   <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+      <property name="velocityProperties">
+         <value>
+    		resource.loader=class
+    		class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+         </value>
+      </property>
+   </bean>
 
 
 </beans>
