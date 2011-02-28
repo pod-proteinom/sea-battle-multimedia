@@ -60,7 +60,7 @@ function valueChanged(id) {
 <div align="center">* - <fmt:message key="required"/></div>
 <form:form method="post" commandName="content_data" action="?action=register" >
 <table align="center">
-    <tr align="right"><td>ТЕСТ
+    <tr align="right"><td>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset" value="Отмена">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="Сохранить">
     </td></tr>

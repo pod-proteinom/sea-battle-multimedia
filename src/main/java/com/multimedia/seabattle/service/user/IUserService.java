@@ -18,7 +18,12 @@ public interface IUserService extends ISecurityService{
 	/**
 	 * registers user in the system
 	 */
-	public boolean registerUser(User user);
+	public boolean registerUser(User user, String host);
+
+	/**
+	 * activates user with given login
+	 */
+	public boolean activateUser(String login);
 
 	/**
 	 * check whether you can use this login to register in a system

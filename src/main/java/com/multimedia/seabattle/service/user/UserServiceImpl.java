@@ -10,12 +10,22 @@
  ******************************************************************************/
 package com.multimedia.seabattle.service.user;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.mail.internet.MimeMessage;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.velocity.VelocityEngineUtils;
+
 import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.User;
 
@@ -23,22 +33,54 @@ import com.multimedia.seabattle.model.beans.User;
 public class UserServiceImpl implements IUserService{
 	private IGenericDAO<User, Long> user_dao;
 
+	private SimpleMailMessage templateMessage;
+	
+	private JavaMailSender mailSender;
+	private VelocityEngine velocityEngine;
+
+
 	@Override
-	public boolean registerUser(User user) {
+	public boolean registerUser(User user, String host) {
+		user.setActive(Boolean.FALSE);
 		user.setLast_accessed(new java.sql.Timestamp(System.currentTimeMillis()));
 		//TODO: mb make it somewhere else
         String md5=org.apache.catalina.realm.RealmBase.Digest(user.getPassword(),"MD5","UTF-8");
 		user.setPassword(md5);
+		//sending email notification
+		sendConfirmationEmail(user, host);
 		//TODO: insert roles
 		user_dao.makePersistent(user);
 		return true;
 	}
 
-	public static final String[] SECURITY_WHERE =  new String[]{"login","password"};
+	  private void sendConfirmationEmail(final User user, final String host) {
+	      MimeMessagePreparator preparator = new MimeMessagePreparator() {
+	         public void prepare(MimeMessage mimeMessage) throws Exception {
+	            MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+	            message.setTo(user.getEmail());
+	            message.setFrom(templateMessage.getFrom());
+	            message.setSubject("account registration");
+	            Map<String, Object> model = new HashMap<String, Object>();
+	            model.put("user", user);
+	            model.put("host", host);
+	            
+	            String text = VelocityEngineUtils.mergeTemplateIntoString(
+	               velocityEngine,
+	               "com/multimedia/seabattle/service/user/RegisterEmailTemplate.vm",
+	               "UTF-8",
+	               model);
+	            message.setText(text, true);
+	         }
+	      };
+	      this.mailSender.send(preparator);
+	   }
+
+	public static final String[] SECURITY_WHERE =  new String[]{"login","password", "active"};
 	@Override
 	public User getUser(String login, String password) {
 		List<User> r =
-				user_dao.getByPropertiesValuePortionOrdered(null, null, SECURITY_WHERE, new Object[]{login, password}, 0, 1, null, null);
+				user_dao.getByPropertiesValuePortionOrdered(null, null,
+						SECURITY_WHERE, new Object[]{login, password, Boolean.TRUE}, 0, 1, null, null);
 		if (r!=null&&!r.isEmpty()){
 			return r.get(0);
 		}else{
@@ -48,7 +90,12 @@ public class UserServiceImpl implements IUserService{
 
 	@Override
 	public User getUser(Long id) {
-		return user_dao.getById(id);
+		User user = user_dao.getById(id);
+		if (user.getActive()){
+			return user;
+		} else {
+			return null;
+		}
 	}
 
 	protected static final String[] SECURITY_UPDATE = new String[]{"last_accessed"};
@@ -68,6 +115,16 @@ public class UserServiceImpl implements IUserService{
 	public boolean checkUserLogin(String login) {
 		return user_dao.getRowCount("login", login)==0;
 	}
+	
+	@Override
+	public boolean activateUser(String login) {
+		Long id = (Long)user_dao.getSinglePropertyU("id", "login", login);
+		if (id==null){
+			return false;
+		} else {
+			return user_dao.updatePropertyById("active", Boolean.TRUE, id)>0;
+		}
+	}
 
 //------------------------------------------------------------------------------------------------
 	@Required
@@ -75,5 +132,23 @@ public class UserServiceImpl implements IUserService{
 	public void setDao(IGenericDAO<User, Long> dao) {
 		this.user_dao = dao;
 	}
-	
+
+	@Required
+	@Resource(name="templateMessage")
+    public void setRegisterTemplateMessage(SimpleMailMessage templateMessage) {
+        this.templateMessage = templateMessage;
+    }
+
+	@Required
+	@Resource(name="mailSender")
+	public void setMailSender(JavaMailSender mailSender) {
+		this.mailSender = mailSender;
+	}
+
+	@Required
+	@Resource(name="velocityEngine")
+	public void setVelocityEngine(VelocityEngine velocityEngine) {
+	   this.velocityEngine = velocityEngine;
+	}
+
 }

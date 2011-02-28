@@ -3,6 +3,7 @@ package com.multimedia.seabattle.controllers;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -11,10 +12,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.multimedia.seabattle.config.ITemplateConfig;
 import com.multimedia.seabattle.model.beans.User;
-import com.multimedia.seabattle.service.country.ICountryService;
 import com.multimedia.seabattle.service.user.IUserService;
 import com.multimedia.seabattle.service.user.IUserValidator;
 
@@ -29,6 +30,7 @@ public class UserRegisterController {
 	private IUserValidator user_validator;
 
 	protected final String register_url = "/WEB-INF/views/user/register.jsp";
+	protected final String activate_url = "/WEB-INF/views/user/activate.jsp";
 
 	@RequestMapping
 	public String doRegisterPrepare(Map<String, Object> model){
@@ -40,7 +42,7 @@ public class UserRegisterController {
 	}
 
 	@RequestMapping(params={"action=register"})
-	public String doRegister(Map<String, Object> model, @Valid User obj, BindingResult res){
+	public String doRegister(Map<String, Object> model, @Valid User obj, BindingResult res, HttpServletRequest request){
 		logger.debug("do=register");
 
 		model.put(config.getContentUrlAttribute(), register_url);
@@ -50,8 +52,9 @@ public class UserRegisterController {
 		if (validateUser(obj, res).hasErrors()){
 			common.utils.CommonAttributes.addErrorMessage("form_errors", model);
 		} else {
-			if (user_service.registerUser(obj)){
+			if (user_service.registerUser(obj, request.getServerName()+":"+request.getServerPort()+request.getContextPath())){
 				common.utils.CommonAttributes.addHelpMessage("operation_succeed", model);
+				common.utils.CommonAttributes.addHelpMessage("email_notification", model);
 			} else {
 				common.utils.CommonAttributes.addErrorMessage("operation_fail", model);
 			}
@@ -82,6 +85,18 @@ public class UserRegisterController {
 			res.rejectValue("country", tmp);
 		}
 		return res;
+	}
+
+	@RequestMapping(params={"action=activate"})
+	public String activateUser(Map<String, Object> model, @RequestParam(value="login") String login)
+	{
+		model.put(config.getContentUrlAttribute(), activate_url);
+		if (user_service.activateUser(login)){
+			common.utils.CommonAttributes.addHelpMessage("operation_succeed", model);
+		} else {
+			common.utils.CommonAttributes.addErrorMessage("operation_fail", model);
+		}
+		return config.getTemplateUrl();
 	}
 
 
