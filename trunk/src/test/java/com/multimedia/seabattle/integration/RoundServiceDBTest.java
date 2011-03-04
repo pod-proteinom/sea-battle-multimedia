@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.multimedia.seabattle.dao.cell.ICellDAO;
 import com.multimedia.seabattle.dao.round.IRoundDAO;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;

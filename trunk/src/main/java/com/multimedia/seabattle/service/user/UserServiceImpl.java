@@ -12,6 +12,7 @@ package com.multimedia.seabattle.service.user;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -40,20 +41,20 @@ public class UserServiceImpl implements IUserService{
 
 
 	@Override
-	public boolean registerUser(User user, String host) {
+	public boolean registerUser(User user, String host, Locale locale) {
 		user.setActive(Boolean.FALSE);
 		user.setLast_accessed(new java.sql.Timestamp(System.currentTimeMillis()));
 		//TODO: mb make it somewhere else
         String md5=org.apache.catalina.realm.RealmBase.Digest(user.getPassword(),"MD5","UTF-8");
 		user.setPassword(md5);
 		//sending email notification
-		sendConfirmationEmail(user, host);
+		sendConfirmationEmail(user, host, locale);
 		//TODO: insert roles
 		user_dao.makePersistent(user);
 		return true;
 	}
 
-	  private void sendConfirmationEmail(final User user, final String host) {
+	  private void sendConfirmationEmail(final User user, final String host, final Locale locale) {
 	      MimeMessagePreparator preparator = new MimeMessagePreparator() {
 	         public void prepare(MimeMessage mimeMessage) throws Exception {
 	            MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
@@ -63,6 +64,7 @@ public class UserServiceImpl implements IUserService{
 	            Map<String, Object> model = new HashMap<String, Object>();
 	            model.put("user", user);
 	            model.put("host", host);
+	            model.put("locale", locale.getLanguage());
 	            
 	            String text = VelocityEngineUtils.mergeTemplateIntoString(
 	               velocityEngine,

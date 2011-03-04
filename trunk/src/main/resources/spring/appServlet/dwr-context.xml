@@ -11,16 +11,21 @@
 		 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 	
 	<context:annotation-config />
-    <dwr:configuration>
-    	<dwr:convert class="com.multimedia.seabattle.model.beans.DwrTestBean" type="bean"/>
-    	<dwr:convert class="com.multimedia.seabattle.model.beans.Country" type="bean"/>
-    </dwr:configuration>
     <dwr:annotation-config/>
     <dwr:url-mapping/>
-    <dwr:controller id="dwrController" debug="true">
-    	<!--dwr:config-param name="jsonpEnabled" value="true"/-->
+    <!--dwr:controller id="dwrController" debug="true">
     	<dwr:config-param name="activeReverseAjaxEnabled" value="true"/>
+    </dwr:controller-->
+    
+	<dwr:controller id="dwrController"  debug="true">
+		<dwr:config-param name="activeReverseAjaxEnabled" value="true" />
+		<dwr:config-param name="pollAndCometEnabled" value="true" />
+		<dwr:config-param name="maxWaitAfterWrite" value="-1"/>
+		<dwr:config-param name="org.directwebremoting.extend.ServerLoadMonitor" value="org.directwebremoting.impl.PollingServerLoadMonitor"/>
+		<!--<dwr:config-param name="disconnectedTime" value="1000"/>-->
+		<!--<dwr:config-param name="org.directwebremoting.extend.ScriptSessionManager" value="ctiSessionListener" />-->
     </dwr:controller>
+    
     <context:component-scan base-package="com.multimedia.seabattle.dwr" />
 
 </beans>

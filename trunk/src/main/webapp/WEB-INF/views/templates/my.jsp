@@ -13,7 +13,7 @@
 </head>
 
 <body>
-
+<div>
 <div class="locales">
 <a href="?locale=ru"><img alt="ru" src="${pageContext.servletContext.contextPath}/images/i18n/ru.jpg"/></a>
 <a href="?locale=en"><img alt="en" src="${pageContext.servletContext.contextPath}/images/i18n/en.jpg"/></a>
@@ -21,6 +21,9 @@
 <div class="login">
 <jsp:include page="/WEB-INF/jspf/auth/login.jsp" flush="false"/>
 </div>
+</div>
+<br style="clear: both;"/>
+
 
 <div>
 <jsp:include page="${navigation_url}" flush="false"/>

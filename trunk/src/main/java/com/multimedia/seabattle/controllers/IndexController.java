@@ -19,7 +19,7 @@ public class IndexController {
 
 	protected ITemplateConfig config;
 
-	private final String index_url = "/WEB-INF/index.jsp";
+	private final String index_url = "/WEB-INF/views/index.jsp";
 
 
 	@RequestMapping

@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.multimedia.seabattle.service.user;
 
+import java.util.Locale;
+
 import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.security.services.ISecurityService;
 
@@ -18,7 +20,7 @@ public interface IUserService extends ISecurityService{
 	/**
 	 * registers user in the system
 	 */
-	public boolean registerUser(User user, String host);
+	public boolean registerUser(User user, String host, Locale locale);
 
 	/**
 	 * activates user with given login
