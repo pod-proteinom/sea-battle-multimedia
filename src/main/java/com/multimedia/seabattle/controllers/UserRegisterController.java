@@ -1,5 +1,6 @@
 package com.multimedia.seabattle.controllers;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -42,7 +43,7 @@ public class UserRegisterController {
 	}
 
 	@RequestMapping(params={"action=register"})
-	public String doRegister(Map<String, Object> model, @Valid User obj, BindingResult res, HttpServletRequest request){
+	public String doRegister(Map<String, Object> model, @Valid User obj, BindingResult res, HttpServletRequest request, Locale locale){
 		logger.debug("do=register");
 
 		model.put(config.getContentUrlAttribute(), register_url);
@@ -52,7 +53,7 @@ public class UserRegisterController {
 		if (validateUser(obj, res).hasErrors()){
 			common.utils.CommonAttributes.addErrorMessage("form_errors", model);
 		} else {
-			if (user_service.registerUser(obj, request.getServerName()+":"+request.getServerPort()+request.getContextPath())){
+			if (user_service.registerUser(obj, request.getServerName()+":"+request.getServerPort()+request.getContextPath(), locale)){
 				common.utils.CommonAttributes.addHelpMessage("operation_succeed", model);
 				common.utils.CommonAttributes.addHelpMessage("email_notification", model);
 			} else {
@@ -88,7 +89,7 @@ public class UserRegisterController {
 	}
 
 	@RequestMapping(params={"action=activate"})
-	public String activateUser(Map<String, Object> model, @RequestParam(value="login") String login)
+	public String activateUser(Map<String, Object> model, @RequestParam(value="login") String login, Locale locale)
 	{
 		model.put(config.getContentUrlAttribute(), activate_url);
 		if (user_service.activateUser(login)){

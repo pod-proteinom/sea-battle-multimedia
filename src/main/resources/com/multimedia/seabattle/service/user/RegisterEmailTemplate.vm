@@ -1,6 +1,6 @@
 <html>
 <body>
-<h3>Hi ${user.name} ${user.login}, welcome to the Sea Battle game!</h3>
+<h3>Hi ${user.name} ${user.surname}, welcome to the Sea Battle game!</h3>
 <div>
 Your login is ${user.login}.
 </div>
@@ -8,7 +8,7 @@ Your login is ${user.login}.
 Your email address is ${user.email}.
 </div>
 <div>
-To activate your account go follow the link <a href='http://${host}/register.htm?action=activate&amp;login=${user.login}'>http://${host}/register.htm?action=activate&amp;login=${user.login}</a>
+To activate your account go follow the link <a href='http://${host}/register.htm?action=activate&amp;login=${user.login}&amp;locale=${locale}'>http://${host}/register.htm?action=activate&amp;login=${user.login}</a>
 </div>
 </body>
 </html>

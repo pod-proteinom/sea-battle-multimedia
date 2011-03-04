@@ -7,4 +7,11 @@
 <%@include file="/WEB-INF/jspf/messages/help.jsp"%>
 <%@include file="/WEB-INF/jspf/messages/error.jsp"%>
 
+<div class="content_msg" align="center">
+<a href="game/player.htm"><fmt:message key="player"/></a>
+</div>
+<div class="content_msg" align="center">
+<a href="game/computer.htm"><fmt:message key="computer"/></a>
+</div>
+
 </fmt:bundle>

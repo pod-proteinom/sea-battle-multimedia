@@ -140,7 +140,12 @@ function valueChanged(id) {
 </fmt:bundle>
 
 <script type="text/javascript">
-$("#date").datepicker({ dateFormat: 'yy-mm-dd' });
+$("#date").datepicker({
+			dateFormat: 'yy-mm-dd',
+			onSelect: function(){
+	        	$('#date_error').html('');
+			}
+		});
 
 $("#autocomplete1").autocomplete({
 	url:'${pageContext.servletContext.contextPath}/json/countries.htm',

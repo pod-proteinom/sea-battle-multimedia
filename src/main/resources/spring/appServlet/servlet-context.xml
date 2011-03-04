@@ -26,7 +26,7 @@
 		</bean>
 
 		<mvc:interceptor>
-			<mvc:mapping path="/private/**"/>
+			<mvc:mapping path="/game/**"/>
 			<bean id="privateArea" class="com.multimedia.security.interceptors.Protected">
 				<property name="service" ref="userService"/>
 			</bean>

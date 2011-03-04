@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.multimedia.seabattle.dao.util.HQLPartGenerator;
-import com.multimedia.seabattle.model.beans.Cell;
 
 /**
  *

@@ -8,4 +8,8 @@
 <%@include file="/WEB-INF/jspf/messages/help.jsp"%>
 <%@include file="/WEB-INF/jspf/messages/error.jsp"%>
 
+<div align="center" class="content_msg">
+<a href="${pageContext.servletContext.contextPath}/index.htm"><fmt:message key="back_link"/></a>
+</div>
+
 </fmt:bundle>

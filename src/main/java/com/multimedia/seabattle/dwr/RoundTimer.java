@@ -7,28 +7,31 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import org.directwebremoting.Browser;
 import org.directwebremoting.ScriptSession;
-import org.directwebremoting.ScriptSessionFilter;
 import org.directwebremoting.WebContextFactory;
 import org.directwebremoting.annotations.RemoteMethod;
-import org.directwebremoting.annotations.RemoteProxy;
-import org.directwebremoting.impl.DaemonThreadFactory;
 import org.directwebremoting.ui.dwr.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Required;
 
-@Service("RoundTimer")
-@RemoteProxy(name="RoundTimer")
+import com.multimedia.seabattle.dwr.util.AttributeIdScriptSessionFilter;
+
+//@Service("RoundTimer")
+//@RemoteProxy(name="RoundTimer")
 public class RoundTimer{
 	private static final Logger logger = LoggerFactory.getLogger(RoundTimer.class);
 
-	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1, new DaemonThreadFactory());
-	private Timer timer;
+	private ScheduledThreadPoolExecutor executor;
+	private WaitTimer timer;
 
-    public RoundTimer() {
-    	timer = new Timer(this);
+	@PostConstruct
+    public void afterPropertiesSet() {
+    	timer = new WaitTimer(this);
         executor.scheduleAtFixedRate(timer, 1, 1, TimeUnit.SECONDS);
     }
 
@@ -40,7 +43,7 @@ public class RoundTimer{
     	logger.debug("refreshing time in rounds for ["+sessionId+"] time ["+output+"]");
     	//TODO: add real context here
         String page = "/seabattle/resources/RoundTimer.html";
-        Browser.withPageFiltered(page, new AttributeScriptSessionFilter(sessionId), new Runnable() {
+        Browser.withPageFiltered(page, new AttributeIdScriptSessionFilter(sessionId), new Runnable() {
             public void run() {
                 Util.setValue("roundTime", output);
             }
@@ -48,43 +51,33 @@ public class RoundTimer{
     }
 
     @RemoteMethod
-    public void startNewRound(final String sessionId){
-    	logger.debug("starting new round for ["+sessionId+"]");
-    	timer.startRound(sessionId);
-
+    public void startNewRound(){
     	ScriptSession scriptSession = WebContextFactory.get().getScriptSession();
-        scriptSession.setAttribute(AttributeScriptSessionFilter.SESSION_ATTRIBUTE, sessionId);
+    	if (logger.isDebugEnabled()){
+    		logger.debug("starting new round for ["+scriptSession.getId()+"]");
+    	}
+    	timer.startRound(scriptSession.getId());
+
+        scriptSession.setAttribute(AttributeIdScriptSessionFilter.SESSION_ATTRIBUTE, scriptSession.getId());
     }
+
+//--------------------------------------------------------------------------------------
+    @Required
+    @Resource(name="executor")
+    public void setExecutor(ScheduledThreadPoolExecutor executor) {
+		this.executor = executor;
+	}
 
 }
 
-class AttributeScriptSessionFilter implements ScriptSessionFilter
-{
-	public final static String SESSION_ATTRIBUTE = "session-id";
-
-    private final String sessionId;
-
-    public AttributeScriptSessionFilter(String sessionId)
-    {
-        this.sessionId = sessionId;
-    }
-
-    @Override
-    public boolean match(ScriptSession session)
-    {
-        Object check = session.getAttribute(SESSION_ATTRIBUTE);
-        return (check != null && check.equals(sessionId));
-    }
-}
-
-class Timer implements Runnable{
+class WaitTimer implements Runnable{
 	private static final Logger logger = LoggerFactory.getLogger(Timer.class);
 
 	private Hashtable<String, AtomicInteger> rounds = new Hashtable<String, AtomicInteger>();
 	private RoundTimer roundTimer;
 	private transient int seconds = 30;
 
-	public Timer(RoundTimer roundTimer){
+	public WaitTimer(RoundTimer roundTimer){
 		logger.debug("created Timer");
 		this.roundTimer = roundTimer;
 	}
@@ -130,18 +123,4 @@ class Timer implements Runnable{
     	}
     	rounds.remove(sessionId);
     }
-
-    /**
-     * Called from the client to turn the clock on/off
-     */
-    /*public synchronized void toggle() {
-        active = !active;
-
-        if (active) {
-            setClockDisplay("Started");
-        }
-        else {
-            setClockDisplay("Stopped");
-        }
-    }*/
 }

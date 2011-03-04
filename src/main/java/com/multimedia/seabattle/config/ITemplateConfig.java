@@ -1,6 +1,7 @@
 package com.multimedia.seabattle.config;
 
 public interface ITemplateConfig {
+
 	/**
 	* url of page that serves as a template (may include places for including navigation and content pages)
 	* @return url

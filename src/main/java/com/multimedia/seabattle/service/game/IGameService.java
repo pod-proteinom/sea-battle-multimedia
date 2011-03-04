@@ -3,6 +3,7 @@ package com.multimedia.seabattle.service.game;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.TurnResult;
+import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
@@ -69,4 +70,9 @@ public interface IGameService {
 	 * @return turn result(shoot result + round result)
 	 */
 	public TurnResult makeTurn(Game game, Boolean player1, Coordinates target);
+
+	/**
+	 * get game for given user or null if none found
+	 */
+	public Game getGame(User user);
 }

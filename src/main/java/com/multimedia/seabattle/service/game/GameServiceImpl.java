@@ -19,6 +19,7 @@ import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Ship;
 import com.multimedia.seabattle.model.beans.TurnResult;
+import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.seabattle.model.types.GameShipType;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.RoundResult;
@@ -26,7 +27,6 @@ import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
 import com.multimedia.seabattle.model.types.ShootResult;
 import com.multimedia.seabattle.service.battlefield.IBattlefieldService;
-import com.multimedia.seabattle.service.computer.IComputerPlayer;
 import com.multimedia.seabattle.service.round.IRoundService;
 import com.multimedia.seabattle.service.ships.IGameShips;
 import com.multimedia.seabattle.service.ships.IShipBuilder;
@@ -226,6 +226,19 @@ public class GameServiceImpl implements IGameService{
 		}
 	}
 
+	@Override
+	public Game getGame(User user) {
+		List<Game> games = game_dao.getByPropertiesValuePortionOrdered(null, null,
+				new String[]{"player1", "ended"},
+				new Object[]{user.getLogin(), null},
+				0, 1,
+				null, null);
+		if (games.size()>0){
+			return games.get(0);
+		} else {
+			return null;
+		}
+	}
 
 // -------------------------------- dependencies --------------------------
 	@Required
