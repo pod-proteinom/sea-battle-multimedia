@@ -28,6 +28,7 @@
 		<property name="basenames">
 			<list>
 				<value>msg/common</value>
+				<value>msg/ships/name</value>
 			</list>
 		</property>
 	</bean>

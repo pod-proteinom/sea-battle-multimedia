@@ -52,7 +52,7 @@
 <%@include file="/WEB-INF/jspf/messages/help.jsp"%>
 <%@include file="/WEB-INF/jspf/messages/error.jsp"%>
 
-<div align="center" class="content_msg"><fmt:message key="${content_data}"/></div>
+<div align="center" class="content_msg"><fmt:message key="wait_player"/></div>
 
 <div align="left" class="content_msg" id="main_msg"><fmt:message key="time_wait"/> : [<span id="waitTimer"></span>]</div>
 

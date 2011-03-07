@@ -31,8 +31,8 @@
 		<level value="debug" />
 	</logger>
 
-	<logger name="com.multimedia.seabattle.dwr.TicketRemoteService">
-		<level value="debug" />
+	<logger name="com.multimedia.seabattle.dwr">
+		<level value="info" />
 	</logger>
 
 	<logger name="com.multimedia.seabattle.dao">

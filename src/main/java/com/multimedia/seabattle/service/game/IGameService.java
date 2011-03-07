@@ -9,6 +9,8 @@ import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
 import com.multimedia.seabattle.service.ships.IShipGenerator;
 
+import java.util.Set;
+
 /**
  * this service represents user interacting with battlefield
  * @author Dmitriy_Demchuk
@@ -75,4 +77,6 @@ public interface IGameService {
 	 * get game for given user or null if none found
 	 */
 	public Game getGame(User user);
+
+	public Set<ShipType> getAvailableShips(Game game);
 }
