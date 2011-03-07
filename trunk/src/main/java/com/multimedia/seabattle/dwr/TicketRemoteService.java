@@ -117,6 +117,11 @@ class Timer implements Runnable{
 		this.ticketService = value;
 	}
 
+	@Override
+	public String toString() {
+		return super.toString()+":TicketTimer";
+	}
+
     //protected transient boolean active = false;
 
     public synchronized void run() {
