@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.multimedia.seabattle.config.ITemplateConfig;
 
 @Controller("IndexController")
-@RequestMapping("/index.htm")
+@RequestMapping({"/index.htm", "/"})
 public class IndexController {
 	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
