@@ -1,23 +1,31 @@
-$(function() {
-$.ajax({
-url: "ships.htm",
-dataType: "json",
-success: function(data){
+/**
+ * appends boats to the div
+ * @param id - id of the tag where to append boats
+ * @param url - url where with available ships json 
+ */
+function appendBoats(id, url){
+	if (!id) id = "#availableShips";
+	if (!url) url = "ships.htm"
+	$.ajax({
+		"url": url,
+		dataType: "json",
+		success: function(data){
 
-$.each(data, function(i, val){
-$inner = $("<div></div>").appendTo("#availableShips");
-$("<div>"+val.name+"</div>").appendTo($inner);
+		$.each(data, function(i, val){
+		$inner = $("<div></div>").appendTo(id);
+		$("<div>"+val.name+"</div>").appendTo($inner);
 
-appendBoat($inner, val.coordinates, true, val.type);
+		appendBoat($inner, val.coordinates, true, val.type);
 
-});
+		});
+		}
+	});
 }
-});
-});
 
 var shipTypeNumber = 0;
 var currentShipType;
 var currentShipCoordinates;
+var deleting = false;
 
 /**
 rez - where to append your ship
@@ -47,6 +55,7 @@ if (appendID){
 $("#j_"+shipTypeNumber+"_"+coordinates[j].x+"_"+coordinates[j].y+"").click(function(){
 appendBoat($("#currentShips"), coordinates, false, type);
 currentShipType = type;
+deleting = false;
 currentShipCoordinates = coordinates;
 });
 }
@@ -62,4 +71,15 @@ if (coordinates[i].x>x) x = coordinates[i].x;
 if (coordinates[i].y>y) y = coordinates[i].y;
 }
 return {"x":x, "y":y};
+}
+
+/**
+ * canceling ship deployment and setting ship deployment
+ */
+function deletingShip(msg){
+	currentShipType = false;
+	currentShipCoordinates = false;
+	deleting = true;
+
+	$("#currentShips").html(msg);
 }

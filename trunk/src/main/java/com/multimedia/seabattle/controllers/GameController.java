@@ -1,7 +1,7 @@
 package com.multimedia.seabattle.controllers;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.multimedia.seabattle.config.ITemplateConfig;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.Message;
 import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.Ticket;
 import com.multimedia.seabattle.model.beans.User;
@@ -49,6 +50,11 @@ public class GameController implements ITicketListener, MessageSourceAware{
 	private final String lobby_url="/WEB-INF/views/game/player_lobby.jsp";
 	private final String ready_url="/WEB-INF/views/game/player_ready.jsp";
 
+	/**
+	 * try to start a game, if no users waiting, create new ticket and wait for a game
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="/player.htm")
 	public String index(Map<String, Object> model){
 		User user = (User) model.get("user");
@@ -65,6 +71,9 @@ public class GameController implements ITicketListener, MessageSourceAware{
 		return config.getTemplateUrl();
 	}
 
+	/**
+	 * @return all ship types that may be used for the game
+	 */
 	@RequestMapping(value="/ships.htm")
 	public @ResponseBody Set<ShipInfo> getShipTypes(Map<String, Object> model, Locale locale){
 		Game game = (Game) model.get("game");
@@ -91,19 +100,30 @@ public class GameController implements ITicketListener, MessageSourceAware{
 		}
 	}
 
-	@RequestMapping(value="/checkShip.htm")
-	public @ResponseBody ShipCreationResult checkShip(Map<String, Object> model, Locale locale,
-			 @RequestParam(value="type") ShipType type, @RequestParam(value="coords") Coordinates coords){
+	/**
+	 * try to deploy a ship in a given position
+	 * @return result code
+	 */
+	@RequestMapping(value="/deployShip.htm")
+	public @ResponseBody Message deployShip(Map<String, Object> model, Locale locale,
+			 @RequestParam(value="type") ShipType type,
+			 @RequestParam(value="x") Integer x, @RequestParam(value="y") Integer y)
+	{
 		Game game = (Game) model.get("game");
 		User user = (User) model.get("user");
 		if (game==null){
 			if (logger.isDebugEnabled()){
-				logger.debug("requested ships for non existing game");
+				logger.debug("deploy ship for non existing game");
+			}
+			return null;
+		} if (game.getStarted()!=null){
+			if (logger.isDebugEnabled()){
+				logger.debug("deploy ship for game that is started");
 			}
 			return null;
 		} else {
 			if (logger.isDebugEnabled()){
-				logger.debug("getting ships for game #"+game.getId());
+				logger.debug("deploy ship for game #"+game.getId());
 			}
 			Boolean player1 = null;
 			if (game.getPlayer1().equals(user.getLogin())){
@@ -114,9 +134,79 @@ public class GameController implements ITicketListener, MessageSourceAware{
 				//TODO: no such player in this game
 				return null;
 			}
-			ShipCreationResult rez = gameService.createShip(coords, type, game, player1);
-			//si.setName(messageSource.getMessage(ship.toString(), null, locale));
-			return rez;
+			ShipCreationResult rez = gameService.createShip(new Coordinates(x, y), type, game, player1);
+			if (rez==ShipCreationResult.OK){
+				return new Message("OK");
+			} else {
+				return new Message(messageSource.getMessage(rez.toString(), null, locale));
+			}
+		}
+	}
+
+	/**
+	 * try to deploy a ship in a given position
+	 * @return result code
+	 */
+	@RequestMapping(value="/deleteShip.htm")
+	public @ResponseBody List<Coordinates> deleteShip(Map<String, Object> model,
+			 @RequestParam(value="x") Integer x, @RequestParam(value="y") Integer y)
+	{
+		Game game = (Game) model.get("game");
+		User user = (User) model.get("user");
+		if (game==null){
+			if (logger.isDebugEnabled()){
+				logger.debug("delete ship for non existing game");
+			}
+			return null;
+		} if (game.getStarted()!=null){
+			if (logger.isDebugEnabled()){
+				logger.debug("delete ship for game that is started");
+			}
+			return null;
+		} else {
+			if (logger.isDebugEnabled()){
+				logger.debug("delete ship for game #"+game.getId());
+			}
+			Boolean player1 = null;
+			if (game.getPlayer1().equals(user.getLogin())){
+				player1 = Boolean.TRUE;
+			} else if (game.getPlayer2().equals(user.getLogin())){
+				player1 = Boolean.FALSE;
+			} else {
+				//TODO: no such player in this game
+				return null;
+			}
+			return gameService.deleteShip(new Coordinates(x, y), game, player1);
+		}
+	}
+
+	/**
+	 * @return deployed ships coordinates
+	 */
+	@RequestMapping(value="/myShips.htm")
+	public @ResponseBody List<Coordinates> getShips(Map<String, Object> model, Locale locale)
+	{
+		Game game = (Game) model.get("game");
+		User user = (User) model.get("user");
+		if (game==null){
+			if (logger.isDebugEnabled()){
+				logger.debug("requested placed ships for non existing game");
+			}
+			return null;
+		} else {
+			if (logger.isDebugEnabled()){
+				logger.debug("getting placed ships for game #"+game.getId());
+			}
+			Boolean player1 = null;
+			if (game.getPlayer1().equals(user.getLogin())){
+				player1 = Boolean.TRUE;
+			} else if (game.getPlayer2().equals(user.getLogin())){
+				player1 = Boolean.FALSE;
+			} else {
+				//TODO: no such player in this game
+				return null;
+			}
+			return gameService.getUsedCoordinates(game, player1);
 		}
 	}
 
@@ -133,6 +223,9 @@ public class GameController implements ITicketListener, MessageSourceAware{
 		User user = (User)com.multimedia.security.Utils.getCurrentUser(request);
 		if (user==null){
 			return;
+		}
+		if (logger.isDebugEnabled()){
+			logger.debug("get game for user ["+user.getLogin()+"]");
 		}
 		model.put("user", user);
 		model.put("game", gameService.getGame(user));

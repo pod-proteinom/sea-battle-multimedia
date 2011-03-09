@@ -187,6 +187,19 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 		return cell_dao.getShipAliveCells(game, player1)>0;
 	}
 
+	@Override
+	public List<Coordinates> getUsedCoordinates(Game game, Boolean player1) {
+		return cell_dao.getShipUsedCoordinates(game, player1);
+	}
+
+	@Override
+	public List<Coordinates> getShipCoordinates(Long id) {
+		return (List<Coordinates>) cell_dao.getSingleProperty("coordinates",
+				new String[]{"ship.id"},
+				new Object[]{id},
+				0, 0, null, null);
+	}
+
 // -------------------------------- dependencies --------------------------
 	@Resource(name="cellDAO")
 	public void setCell_dao(ICellDAO value){

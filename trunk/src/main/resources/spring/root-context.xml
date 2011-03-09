@@ -29,6 +29,7 @@
 			<list>
 				<value>msg/common</value>
 				<value>msg/ships/name</value>
+				<value>msg/ships/creation</value>
 			</list>
 		</property>
 	</bean>
