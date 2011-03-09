@@ -9,6 +9,7 @@ import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
 import com.multimedia.seabattle.service.ships.IShipGenerator;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,9 +52,9 @@ public interface IGameService {
 
 	/**
 	 * try to delete ship with given coordinates in given game, for given player
-	 * @return false if no such ship found in specified game or owned by given player
+	 * @return list of coordinates that were released
 	 */
-	public boolean deleteShip(Coordinates coords, Game game, Boolean player1);
+	public List<Coordinates> deleteShip(Coordinates coords, Game game, Boolean player1);
 
 	/**
 	 * generate ships in a given game for given player using given ship generator
@@ -79,4 +80,9 @@ public interface IGameService {
 	public Game getGame(User user);
 
 	public Set<ShipType> getAvailableShips(Game game);
+
+	/**
+	 * get a list of coordinates that contain ships
+	 */
+	public List<Coordinates> getUsedCoordinates(Game game, Boolean player1);
 }

@@ -55,10 +55,10 @@ public class GameServiceTest {
 			ShipCreationResult res = game_service.createShip(new Coordinates(1, 1), type, game, Boolean.TRUE);
 			if (type.equals(ShipType.UNSUPPORTED_SHIP)){
 				assertEquals("unsupported ship was created, but might not", ShipCreationResult.SHIP_TYPE_NOT_ALLOWED, res);
-				assertFalse("deleted ship that does not exists", game_service.deleteShip(new Coordinates(1, 1), game, Boolean.TRUE));
+				assertNull("deleted ship that does not exists", game_service.deleteShip(new Coordinates(1, 1), game, Boolean.TRUE));
 			} else {
 				assertEquals("unsupported ship was created, but might not", ShipCreationResult.OK, res);
-				assertTrue("failed to delete ship", game_service.deleteShip(new Coordinates(1, 1), game, Boolean.TRUE));
+				assertNotNull("failed to delete ship", game_service.deleteShip(new Coordinates(1, 1), game, Boolean.TRUE));
 			}
 		}
 	}

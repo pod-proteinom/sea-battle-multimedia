@@ -74,4 +74,14 @@ public interface IBattlefieldService {
 	 * @return true is has
 	 */
 	public boolean hasMoreShips(Game game, Boolean player1);
+
+	/**
+	 * get a list of coordinates that contain ships
+	 */
+	public List<Coordinates> getUsedCoordinates(Game game, Boolean player1);
+
+	/**
+	 * get a list of coordinates for a given ship
+	 */
+	public List<Coordinates> getShipCoordinates(Long id);
 }

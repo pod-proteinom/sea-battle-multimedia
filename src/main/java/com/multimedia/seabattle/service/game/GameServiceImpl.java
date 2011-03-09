@@ -95,25 +95,28 @@ public class GameServiceImpl implements IGameService{
 	}
 
 	@Override
-	public boolean deleteShip(Coordinates coords, Game game, Boolean player1) {
+	public List<Coordinates> deleteShip(Coordinates coords, Game game, Boolean player1) {
 		Long ship_id = battlefield_service.getShip(coords, game, player1);
 		//1-st we need to check owner of this ship and game
 		if (ship_id==null){
 			if (logger.isDebugEnabled()){
 				logger.debug("no ship with coordinates "+coords +" found in game ["+game.getId()+"] for player ["+player1+"]");
 			}
-			return false;
+			return null;
 		}
+		List<Coordinates> rez = battlefield_service.getShipCoordinates(ship_id);
 		if (battlefield_service.releaseShip(ship_id)){
 			if (logger.isDebugEnabled()){
 				logger.debug("deleting ship ["+ship_id+"] succeed in game ["+game.getId()+"] for player ["+player1+"]");
 			}
-			return ship_dao.deleteById(ship_id)>0;
+			if (ship_dao.deleteById(ship_id)>0){
+				return rez;
+			}
 		}
 		if (logger.isDebugEnabled()){
 			logger.debug("deleting ship ["+ship_id+"] failed in game ["+game.getId()+"] for player ["+player1+"]");
 		}
-		return false;
+		return null;
 	}
 
 	@Override
@@ -237,13 +240,27 @@ public class GameServiceImpl implements IGameService{
 		if (games.size()>0){
 			return games.get(0);
 		} else {
-			return null;
+			games = game_dao.getByPropertiesValuePortionOrdered(null, null,
+					new String[]{"player2", "ended"},
+					new Object[]{user.getLogin(), null},
+					0, 1,
+					null, null);
+			if (games.size()>0){
+				return games.get(0);
+			} else {
+				return null;
+			}
 		}
 	}
 
 	@Override
 	public Set<ShipType> getAvailableShips(Game game) {
 		return game_ships.get(game.getType()).getValidShipTypes();
+	}
+
+	@Override
+	public List<Coordinates> getUsedCoordinates(Game game, Boolean player1) {
+		return battlefield_service.getUsedCoordinates(game, player1);
 	}
 
 // -------------------------------- dependencies --------------------------

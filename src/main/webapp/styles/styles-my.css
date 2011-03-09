@@ -86,20 +86,27 @@ div.field div.hnums div {
 	float: left;
 }
 
-div.field div.inner div:hover {
-	background-color: red;
-}
-
 /* ships description */
-#availableShips > div > table > tbody > tr > td, ship {
+#availableShips > div > table > tbody > tr > td {
 width:10px;
 height:10px;
 color:white;
 }
+
 .ship {
+width:10px;
+height:10px;
 background-color:gray;
+}
+
+div.field > div.inner > div.placed_ship{
+background-color: black;
 }
 
 .transient_ship{
 background-color:gray !important;
+}
+
+.wrong_ship{
+background-color:red !important;
 }
