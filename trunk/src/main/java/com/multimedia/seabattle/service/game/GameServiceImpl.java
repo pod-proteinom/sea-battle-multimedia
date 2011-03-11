@@ -2,6 +2,8 @@ package com.multimedia.seabattle.service.game;
 
 import java.sql.Timestamp;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Ship;
+import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.TurnResult;
 import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.seabattle.model.types.GameShipType;
@@ -254,8 +257,17 @@ public class GameServiceImpl implements IGameService{
 	}
 
 	@Override
-	public Set<ShipType> getAvailableShips(Game game) {
-		return game_ships.get(game.getType()).getValidShipTypes();
+	public Set<ShipInfo> getAvailableShips(Game game) {
+		Set<ShipType> ships = game_ships.get(game.getType()).getValidShipTypes();
+		Set<ShipInfo> rez = new HashSet<ShipInfo>();
+		for (ShipType ship : ships){
+			ShipInfo si = new ShipInfo();
+			si.setType(ship.toString());
+			si.setCoordinates(ship.getOffset());
+			si.setValue(ship.getValue());
+			rez.add(si);
+		}
+		return rez;
 	}
 
 	@Override
@@ -263,6 +275,23 @@ public class GameServiceImpl implements IGameService{
 		return battlefield_service.getUsedCoordinates(game, player1);
 	}
 
+	@Override
+	public Map<ShipType, Integer> getUnplacedShips(Game game, Boolean player1) {
+		Map<Integer, Integer> unplaced = game_ships.get(game.getType()).getInvalidShipTypes(getAllShipsLength(game, player1));
+		Map<ShipType, Integer> rez = new HashMap<ShipType, Integer>();
+		Iterator<Entry<Integer, Integer>> i = unplaced.entrySet().iterator();
+		while (i.hasNext()){
+			Entry<Integer, Integer> e = i.next();
+			if (e.getValue()!=0){
+				for (ShipType st : ShipType.values()){
+					if (st.getValue()==e.getKey()){
+						rez.put(st, e.getValue());
+					}
+				}
+			}
+		}
+		return rez;
+	}
 // -------------------------------- dependencies --------------------------
 	@Required
 	@Resource(name="gameDAO")

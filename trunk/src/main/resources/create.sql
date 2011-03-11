@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS `sea_battle` DEFAULT CHARACTER SET utf8;
-
 USE `sea_battle`;
 
 CREATE TABLE IF NOT EXISTS `country` (

@@ -2,6 +2,7 @@ package com.multimedia.seabattle.service.game;
 
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.TurnResult;
 import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
@@ -10,6 +11,7 @@ import com.multimedia.seabattle.model.types.ShipType;
 import com.multimedia.seabattle.service.ships.IShipGenerator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -79,7 +81,15 @@ public interface IGameService {
 	 */
 	public Game getGame(User user);
 
-	public Set<ShipType> getAvailableShips(Game game);
+	/**
+	 * get info about ships that can be placed in given game by given player
+	 */
+	public Set<ShipInfo> getAvailableShips(Game game);
+
+	/**
+	 * get info about ships that can be placed in given game by given player
+	 */
+	public Map<ShipType, Integer> getUnplacedShips(Game game, Boolean player1);
 
 	/**
 	 * get a list of coordinates that contain ships

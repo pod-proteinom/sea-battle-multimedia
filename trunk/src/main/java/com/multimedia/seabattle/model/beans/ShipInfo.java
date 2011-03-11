@@ -10,6 +10,8 @@ public class ShipInfo {
 	private int value;
 	private Coordinates[] coordinates;
 
+	private int quantity;
+
 	public String getType() {
 		return type;
 	}
@@ -33,5 +35,11 @@ public class ShipInfo {
 	}
 	public void setCoordinates(Coordinates[] coordinates) {
 		this.coordinates = coordinates;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public int getQuantity() {
+		return quantity;
 	}
 }
