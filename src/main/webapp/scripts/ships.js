@@ -12,11 +12,11 @@ function appendBoats(id, url){
 		success: function(data){
 
 		$.each(data, function(i, val){
-		$inner = $("<div></div>").appendTo(id);
-		$("<div>"+val.name+"</div>").appendTo($inner);
-
-		appendBoat($inner, val.coordinates, true, val.type);
-
+			$inner = $("<div id='"+val.type+"'></div>").appendTo(id);
+			$("<div>"+val.name+"</div>").appendTo($inner);
+			$("<span class='ship_quantity'>"+val.quantity+"</span>").appendTo($inner);
+	
+			appendBoat($inner, val.coordinates, true, val.type);
 		});
 		}
 	});

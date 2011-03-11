@@ -71,6 +71,14 @@ public class GameController implements ITicketListener, MessageSourceAware{
 		return config.getTemplateUrl();
 	}
 
+	private void waitPlayer(Map<String, Object> model){
+		model.put(config.getContentUrlAttribute(), lobby_url);
+	}
+
+	private void startingGame(Map<String, Object> model){
+		model.put(config.getContentUrlAttribute(), ready_url);
+	}
+
 	/**
 	 * @return all ship types that may be used for the game
 	 */
@@ -86,15 +94,9 @@ public class GameController implements ITicketListener, MessageSourceAware{
 			if (logger.isDebugEnabled()){
 				logger.debug("getting ships for game #"+game.getId());
 			}
-			Set<ShipType> ships = gameService.getAvailableShips(game);
-			Set<ShipInfo> rez = new HashSet<ShipInfo>();
-			for (ShipType ship : ships){
-				ShipInfo si = new ShipInfo();
-				si.setType(ship.toString());
-				si.setName(messageSource.getMessage(ship.toString(), null, locale));
-				si.setCoordinates(ship.getOffset());
-				si.setValue(ship.getValue());
-				rez.add(si);
+			Set<ShipInfo> rez = gameService.getAvailableShips(game);
+			for (ShipInfo info:rez){
+				info.setName(messageSource.getMessage(info.getType(), null, locale));
 			}
 			return rez;
 		}
@@ -125,13 +127,8 @@ public class GameController implements ITicketListener, MessageSourceAware{
 			if (logger.isDebugEnabled()){
 				logger.debug("deploy ship for game #"+game.getId());
 			}
-			Boolean player1 = null;
-			if (game.getPlayer1().equals(user.getLogin())){
-				player1 = Boolean.TRUE;
-			} else if (game.getPlayer2().equals(user.getLogin())){
-				player1 = Boolean.FALSE;
-			} else {
-				//TODO: no such player in this game
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null){
 				return null;
 			}
 			ShipCreationResult rez = gameService.createShip(new Coordinates(x, y), type, game, player1);
@@ -167,13 +164,8 @@ public class GameController implements ITicketListener, MessageSourceAware{
 			if (logger.isDebugEnabled()){
 				logger.debug("delete ship for game #"+game.getId());
 			}
-			Boolean player1 = null;
-			if (game.getPlayer1().equals(user.getLogin())){
-				player1 = Boolean.TRUE;
-			} else if (game.getPlayer2().equals(user.getLogin())){
-				player1 = Boolean.FALSE;
-			} else {
-				//TODO: no such player in this game
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null){
 				return null;
 			}
 			return gameService.deleteShip(new Coordinates(x, y), game, player1);
@@ -197,25 +189,26 @@ public class GameController implements ITicketListener, MessageSourceAware{
 			if (logger.isDebugEnabled()){
 				logger.debug("getting placed ships for game #"+game.getId());
 			}
-			Boolean player1 = null;
-			if (game.getPlayer1().equals(user.getLogin())){
-				player1 = Boolean.TRUE;
-			} else if (game.getPlayer2().equals(user.getLogin())){
-				player1 = Boolean.FALSE;
-			} else {
-				//TODO: no such player in this game
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null){
 				return null;
 			}
 			return gameService.getUsedCoordinates(game, player1);
 		}
 	}
 
-	private void waitPlayer(Map<String, Object> model){
-		model.put(config.getContentUrlAttribute(), lobby_url);
-	}
-
-	private void startingGame(Map<String, Object> model){
-		model.put(config.getContentUrlAttribute(), ready_url);
+	/**
+	 * get player of the game
+	 * @return null if wrong player
+	 */
+	private Boolean getPlayer(Game game, User user){
+		if (game.getPlayer1().equals(user.getLogin())){
+			return Boolean.TRUE;
+		} else if (game.getPlayer2().equals(user.getLogin())){
+			return Boolean.FALSE;
+		} else {
+			return null;
+		}
 	}
 
 	@ModelAttribute

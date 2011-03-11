@@ -241,11 +241,11 @@
 		</dependency>
 
 		<!-- mysql jdbc connector -->
+		<!-- TODO: make scope = test here ... -->
 		<dependency>
     		<groupId>mysql</groupId>
     		<artifactId>mysql-connector-java</artifactId>
     		<version>5.1.15</version>
-			<scope>test</scope>
 		</dependency>	
         
 		<!-- catalina (for md5) -->
@@ -340,6 +340,113 @@
 	</repositories>
 	<build>
 		<plugins>
+			<!-- Properties loader -->
+	        <plugin>
+	            <groupId>org.codehaus.mojo</groupId>
+	            <artifactId>properties-maven-plugin</artifactId>
+	            <version>1.0-alpha-1</version>
+	            <executions>
+	                <execution>
+	                    <phase>initialize</phase>
+	                    <goals>
+	                        <goal>read-project-properties</goal>
+	                    </goals>
+	                    <configuration>
+	                        <files>
+	                        	<!-- jdbc driver -->
+	                            <file>src/main/resources/spring/database/jdbc.properties</file>
+	                        </files>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>
+
+			<!-- database schema creation -->
+			 <plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>sql-maven-plugin</artifactId>
+		        <version>1.4</version>
+
+		        <dependencies>
+					<dependency>
+				  		<groupId>mysql</groupId>
+				  		<artifactId>mysql-connector-java</artifactId>
+				  		<version>5.1.15</version>
+  					</dependency>
+				</dependencies>
+		        <!-- common configuration shared by all executions -->
+		        <configuration>
+					<driver>${jdbc.connection.driver_class}</driver>
+					<url>${jdbc.connection.url}</url>
+					<username>${jdbc.connection.username}</username>
+					<password>${jdbc.connection.password}</password>
+					<skip>false</skip>
+		        </configuration>
+
+				<executions>
+					<!--execution>
+						<id>drop-db</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<url>${jdbc.creation.url}</url>
+							<autocommit>true</autocommit>
+							<sqlCommand>drop database ${jdbc.creation.database}</sqlCommand>
+							<onError>continue</onError>
+						</configuration>
+					</execution-->
+					<execution>
+						<id>create-db</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<url>${jdbc.creation.url}</url>
+							<autocommit>true</autocommit>
+							<sqlCommand>CREATE DATABASE IF NOT EXISTS `${jdbc.creation.database}` DEFAULT CHARACTER SET utf8;</sqlCommand>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>create-schema</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<srcFile>src/main/resources/create.sql</srcFile>
+							</srcFiles>
+							<onError>continue</onError>
+						</configuration>
+					</execution>
+
+					<!--execution>
+						<id>create-data</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+							<configuration>
+							<orderFile>ascending</orderFile>
+							<fileset>
+								<basedir>${basedir}</basedir>
+								<includes>
+									<include>src/test/sql/test-data2.sql</include>
+									<include>src/test/sql/test-data1.sql</include>
+								</includes>
+							</fileset>
+						</configuration>
+					</execution-->
+				</executions>
+			</plugin>
+
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -390,36 +497,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.2</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-						<version>${org.aspectj-version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjtools</artifactId>
-						<version>${org.aspectj-version}</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<outxml>true</outxml>
-					<source>${java-version}</source>
-					<target>${java-version}</target>
-				</configuration>
-			</plugin-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -430,6 +507,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<!-- uncomment this if you want to run under tomcat -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
@@ -437,6 +515,18 @@
 				<configuration>
                 	<server>tomcat-standart</server>
                	</configuration>
+			</plugin>
+			<!-- if you use jetty server -->
+			<plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.0.0.M2</version>
+                <configuration>
+                    <scanIntervalSeconds>5</scanIntervalSeconds>
+                    <webAppConfig>
+           				 <contextPath>/seabattle</contextPath>
+					</webAppConfig>
+                </configuration>
 			</plugin>
 		</plugins>
 	</build>
