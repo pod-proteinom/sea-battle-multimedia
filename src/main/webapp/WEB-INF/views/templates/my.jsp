@@ -25,9 +25,7 @@
 <br style="clear: both;"/>
 
 
-<div>
-<jsp:include page="${navigation_url}" flush="false"/>
-</div>
+<%--div><jsp:include page="${navigation_url}" flush="false"/></div--%>
 
 <div>
 <jsp:include page="${content_url}" flush="false"/>

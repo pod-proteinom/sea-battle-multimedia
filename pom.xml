@@ -134,13 +134,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${org.slf4j-version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${org.slf4j-version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -253,7 +251,6 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>catalina</artifactId>
 			<version>6.0.26</version>
-			<scope>provided</scope>
 		</dependency>	
 		<!-- cglib -->
 		<dependency>
@@ -384,7 +381,7 @@
 		        </configuration>
 
 				<executions>
-					<!--execution>
+					<execution>
 						<id>drop-db</id>
 						<phase>process-resources</phase>
 						<goals>
@@ -393,10 +390,10 @@
 						<configuration>
 							<url>${jdbc.creation.url}</url>
 							<autocommit>true</autocommit>
-							<sqlCommand>drop database ${jdbc.creation.database}</sqlCommand>
+							<sqlCommand>DROP DATABASE IF EXISTS `${jdbc.creation.database}`;</sqlCommand>
 							<onError>continue</onError>
 						</configuration>
-					</execution-->
+					</execution>
 					<execution>
 						<id>create-db</id>
 						<phase>process-resources</phase>
@@ -409,7 +406,6 @@
 							<sqlCommand>CREATE DATABASE IF NOT EXISTS `${jdbc.creation.database}` DEFAULT CHARACTER SET utf8;</sqlCommand>
 						</configuration>
 					</execution>
-
 					<execution>
 						<id>create-schema</id>
 						<phase>process-resources</phase>

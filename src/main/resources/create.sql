@@ -6,6 +6,20 @@ CREATE TABLE IF NOT EXISTS `country` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
+create table IF NOT EXISTS `User` (
+	id bigint not null auto_increment,
+	email varchar(255) not null,
+	last_accessed datetime,
+	login varchar(255) not null,
+	password varchar(255) not null,
+	active bit,
+	date date not null,
+	name varchar(255),
+	surname varchar(255),
+	id_country bigint,
+	primary key (id)
+)type=InnoDB;
+
 INSERT INTO `country` (`id`, `name`) VALUES
 (1, 'Afghanistan'),
 (2, 'Albania'),
@@ -259,3 +273,54 @@ INSERT INTO `country` (`id`, `name`) VALUES
 (250, 'Yemen'),
 (251, 'Zambia'),
 (252, 'Zimbabwe');
+
+
+INSERT INTO `sea_battle`.`user`
+(`id`,
+`email`,
+`last_accessed`,
+`login`,
+`password`,
+`active`,
+`date`,
+`name`,
+`surname`,
+`id_country`)
+VALUES
+(
+'1',
+'demchuck.dima@gmail.com',
+'2011-03-16 18:36:56',
+'AAA',
+'e10adc3949ba59abbe56e057f20f883e',
+1,
+'2011-03-01',
+'AAA',
+'AAA',
+'233'
+);
+
+INSERT INTO `sea_battle`.`user`
+(`id`,
+`email`,
+`last_accessed`,
+`login`,
+`password`,
+`active`,
+`date`,
+`name`,
+`surname`,
+`id_country`)
+VALUES
+(
+'2',
+'demchuckdima@gmail.com',
+'2011-03-16 18:37:21',
+'BBB',
+'e10adc3949ba59abbe56e057f20f883e',
+1,
+'2011-03-01',
+'BBB',
+'BBB',
+'234'
+);
