@@ -18,7 +18,7 @@ create table IF NOT EXISTS `User` (
 	surname varchar(255),
 	id_country bigint,
 	primary key (id)
-)type=InnoDB;
+) ENGINE=InnoDB;
 
 INSERT INTO `country` (`id`, `name`) VALUES
 (1, 'Afghanistan'),
