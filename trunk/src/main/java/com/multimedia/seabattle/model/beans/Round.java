@@ -61,6 +61,8 @@ public class Round {
 
 	/** indicates that player1 is shooting this round, else player2 */
 	private Boolean player1;
+	/** indicates that in this round you hit the ship. It is used for optimization. */
+	private Boolean hit;
 
 	/** indicates that player1 is shooting this round, else player2 */
 	public void setPlayer1(Boolean player1) {
@@ -110,6 +112,14 @@ public class Round {
 
 	public Coordinates getCoordinates() {
 		return coordinates;
+	}
+
+	public void setHit(Boolean hit) {
+		this.hit = hit;
+	}
+
+	public Boolean getHit() {
+		return hit;
 	}
 
 }

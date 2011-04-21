@@ -99,7 +99,7 @@ height:10px;
 background-color:gray;
 }
 
-div.field > div.inner > div.placed_ship{
+div.field > div.inner > div.placed_ship {
 background-color: black;
 }
 /* a space that ship occupies */
@@ -115,4 +115,11 @@ background-color:gray !important;
 
 .wrong_ship{
 background-color:red !important;
+}
+
+div.field > div.inner > div.hited {
+background-color: red !important;
+}
+div.field > div.inner > div.missed {
+background-color: blue !important;
 }
