@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.types.GameShipType;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipType;
@@ -18,25 +19,25 @@ public interface IGameShips {
 	/**
 	 * get game type that can be handled by this class
 	 */
-	public GameShipType getGameType();
+	GameShipType getGameType();
 
 	/**
 	 * checks whether this ship type is valid in current game type
 	 * @return true if valid
 	 */
-	public boolean checkShipType(ShipType type);
+	boolean checkShipType(ShipType type);
 
 	/**
 	 * checks whether this ship type can be deployed
 	 * @param ships ships that are already placed on a battlefield
 	 * @return true if valid
 	 */
-	public boolean canDeployShipType(ShipType type, List<Integer> ships);
+	boolean canDeployShipType(ShipType type, List<Integer> ships);
 
 	/**
 	 * get valid ship types for this game type
 	 */
-	public Set<ShipType> getValidShipTypes();
+	Set<ShipType> getValidShipTypes();
 
 	/**
 	 * checks whether player has set all needed ship values.
@@ -44,17 +45,24 @@ public interface IGameShips {
 	 * @param ships that are already deployed on the battlefield
 	 * @return ship type values that must be removed(if<0), added (if>0).
 	 */
-	public Map<Integer, Integer> getInvalidShipTypes(Collection<Integer> ships);
+	Map<Integer, Integer> getInvalidShipTypes(Collection<Integer> ships);
 
 	/**
 	 * get valid ship types for this game type, ordered by length.
 	 * @param ships that are already deployed on the battlefield
 	 * @return valid ShipTypes that must be deployed.
 	 */
-	public Set<ShipType> getValidShipTypes(Collection<Integer> ships);
+	Set<ShipType> getValidShipTypes(Collection<Integer> ships);
 
 	/**
 	 * checks if player has deployed all necessary ships
 	 */
-	public PlayerReadyType checkShips(List<Integer> ships);
+	PlayerReadyType checkShips(List<Integer> ships);
+	
+	/**
+	 * get ship info with ships placed
+	 * @param ships placed ships
+	 * @return ship info about ships
+	 */
+	Set<ShipInfo> getShipsInfo(Collection<Integer> ships);
 }

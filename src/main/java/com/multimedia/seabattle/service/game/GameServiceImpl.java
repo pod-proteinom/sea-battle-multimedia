@@ -1,9 +1,9 @@
 package com.multimedia.seabattle.service.game;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ import com.multimedia.seabattle.service.ships.IShipBuilder;
 import com.multimedia.seabattle.service.ships.IShipGenerator;
 
 @Service("gameService")
-public class GameServiceImpl implements IGameService{
+public class GameServiceImpl implements IGameService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 
@@ -50,6 +50,8 @@ public class GameServiceImpl implements IGameService{
 	private IRoundService round_service;
 
 	private EnumMap<GameShipType, IGameShips> game_ships = new EnumMap<GameShipType, IGameShips>(GameShipType.class);
+
+	private List<IGameListener> listeners = java.util.Collections.synchronizedList(new ArrayList<IGameListener>());
 
 	@Override
 	public Game createGame(String player_1_name, String player_2_name) {
@@ -133,8 +135,14 @@ public class GameServiceImpl implements IGameService{
 		if (res == PlayerReadyType.READY){
 			if (player1){
 				game.setReady1(Boolean.TRUE);
+				for (IGameListener listener:listeners) {
+					listener.playerReady(game.getPlayer1(), game.getPlayer2());
+				}
 			} else {
 				game.setReady2(Boolean.TRUE);
+				for (IGameListener listener:listeners) {
+					listener.playerReady(game.getPlayer2(), game.getPlayer1());
+				}
 			}
 			game_dao.makePersistent(game);
 		}
@@ -257,17 +265,8 @@ public class GameServiceImpl implements IGameService{
 	}
 
 	@Override
-	public Set<ShipInfo> getAvailableShips(Game game) {
-		Set<ShipType> ships = game_ships.get(game.getType()).getValidShipTypes();
-		Set<ShipInfo> rez = new HashSet<ShipInfo>();
-		for (ShipType ship : ships){
-			ShipInfo si = new ShipInfo();
-			si.setType(ship.toString());
-			si.setCoordinates(ship.getOffset());
-			si.setValue(ship.getValue());
-			rez.add(si);
-		}
-		return rez;
+	public Set<ShipInfo> getAvailableShips(Game game, Boolean player1) {
+		return game_ships.get(game.getType()).getShipsInfo(getAllShipsLength(game, player1));
 	}
 
 	@Override
@@ -291,6 +290,12 @@ public class GameServiceImpl implements IGameService{
 			}
 		}
 		return rez;
+	}
+	
+	@Override
+	public synchronized void registerGameListener(IGameListener listener) {
+		//TODO: check whether this listener is duplicate
+		listeners.add(listener);
 	}
 // -------------------------------- dependencies --------------------------
 	@Required

@@ -3,6 +3,7 @@ package com.multimedia.seabattle.service.ships;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.types.GameShipType;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipType;
@@ -60,6 +62,21 @@ public class ClassicGameShips implements IGameShips{
 	@Override
 	public Set<ShipType> getValidShipTypes() {
 		return valid_ships.clone();
+	}
+
+	@Override
+	public Set<ShipInfo> getShipsInfo(Collection<Integer> ships) {
+		Set<ShipInfo> rez = new HashSet<ShipInfo>();
+		Map<Integer, Integer> invalid = getInvalidShipTypes(ships);
+		for (ShipType ship : valid_ships) {
+			ShipInfo si = new ShipInfo();
+			si.setType(ship.toString());
+			si.setCoordinates(ship.getOffset());
+			si.setValue(ship.getValue());
+			si.setQuantity(invalid.get(ship.getValue()));
+			rez.add(si);
+		}
+		return rez;
 	}
 
 	@Override

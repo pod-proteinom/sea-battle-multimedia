@@ -102,6 +102,12 @@ background-color:gray;
 div.field > div.inner > div.placed_ship{
 background-color: black;
 }
+/* a space that ship occupies */
+/*
+div.field > div.inner > div.space_ship{
+background-color: blue;
+}
+*/
 
 .transient_ship{
 background-color:gray !important;

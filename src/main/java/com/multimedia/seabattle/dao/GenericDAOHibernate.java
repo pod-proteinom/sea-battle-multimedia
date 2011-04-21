@@ -317,12 +317,15 @@ public class GenericDAOHibernate<T, ID extends Serializable> implements IGeneric
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public int updatePropertyById(String propertyName, ID id) {
+	public int updatePropertyById(String propertyName, Object propertyValue, ID id) {
 		StringBuilder hql = new StringBuilder("update ");
 		hql.append(entityName);
-		hql.append(" set ").append(propertyName);
-		hql.append(" where id=?");
-		return this.getSessionFactory().getCurrentSession().createQuery(hql.toString()).setParameter(0, id).executeUpdate();
+		hql.append(" set ").append(propertyName).append(" = ?");
+		hql.append(" where id = ?");
+		return this.getSessionFactory().getCurrentSession().createQuery(hql.toString())
+				.setParameter(0, propertyValue)
+				.setParameter(1, id)
+				.executeUpdate();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
@@ -466,7 +469,7 @@ public class GenericDAOHibernate<T, ID extends Serializable> implements IGeneric
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public int updatePropertyById(String propertyName, Object value, ID id) {
+	public int incrementPropertyById(String propertyName, Object value, ID id) {
 		if (propertyName==null||id==null||value==null){
 			return -1;
 			//throw new NullPointerException("updateObjectArrayShortById: One of arguments is null of has 0 length or propertyNames length not eq to propertyValues length");
@@ -726,6 +729,18 @@ public class GenericDAOHibernate<T, ID extends Serializable> implements IGeneric
 
 		Query q = getSessionFactory().getCurrentSession().createQuery(hql.toString());
 		return q.setParameter(HQLPartGenerator.PROP_NAME_PREFIX, propertyValue).executeUpdate();
+	}
+
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	public int deleteByPropertiesValue(String[] propertyName, Object[] propertyValue) {
+		if (propertyName==null) return -1;
+		StringBuilder hql = new StringBuilder("delete ");
+		hql.append(entityName);
+		HQLPartGenerator.getWhereManyColumns(propertyName, propertyValue, hql);
+
+		Query q = getSessionFactory().getCurrentSession().createQuery(hql.toString());
+		
+		return HQLPartGenerator.appendPropertiesValue(propertyValue, q).executeUpdate();
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)

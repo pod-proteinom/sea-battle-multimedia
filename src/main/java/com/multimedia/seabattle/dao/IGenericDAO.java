@@ -79,6 +79,14 @@ import org.hibernate.ScrollableResults;
 	public int deleteByPropertyValue(String propertyName, Object propertyValue);
 
 	/**
+	 * deletes an instance from database by given criteria
+	 * @param propertyName name of field
+	 * @param propertyValue value of field
+	 * @return quantity of rows deleted
+	 */
+	public int deleteByPropertiesValue(String[] propertyName, Object[] propertyValue);
+
+	/**
 	 * this method saves or updates collection of entities
 	 * if property names is null, update all properties
 	 * else update only give entities
@@ -142,16 +150,15 @@ import org.hibernate.ScrollableResults;
 	 * @param id id of entity to update
 	 * @return updated entities count (must be 1)
 	 */
-	public int updatePropertyById(String propertyName, Object value, ID id);
+	public int incrementPropertyById(String propertyName, Object value, ID id);
 
 	/**
-	 * for example (p = p + 1)
 	 * @param propertyName name of property to update
 	 * @param value an amount by which to increase property
 	 * @param id id of entity to update
 	 * @return updated entities count (must be 1)
 	 */
-	public int updatePropertyById(String propertyName, ID id);
+	public int updatePropertyById(String propertyName, Object propertyValue, ID id);
 
 	/**
 	 * @param id

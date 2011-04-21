@@ -1,10 +1,10 @@
-<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <script type="text/javascript" src="/seabattle/dwr/engine.js"></script>
 <script type="text/javascript" src="/seabattle/dwr/util.js"></script>
-<script type="text/javascript" src="/seabattle/dwr/interface/TicketRemoteService.js"></script>
+<script type="text/javascript" src="/seabattle/dwr/interface/GameRemoteService.js"></script>
 
 <fmt:bundle basename="msg/game/player">
 
@@ -27,7 +27,7 @@
 	}
 
 	function waitForPlayer(){
-		TicketRemoteService.waitForPlayer();
+		GameRemoteService.waitForPlayer();
 	}
 
 	function errorHandler(message, ex) {
@@ -35,8 +35,8 @@
 	    //setTimeout(function() { dwr.util.setValue("error", ""); }, 5000)
 	}
 
-	function oponentFound(){
-		$("#main_msg").html('<fmt:message key="opponent_found"/>');
+	function opponentReady(){
+		$("#main_msg").html('<fmt:message key="opponent_ready"/>');
 		setTimeout("redirectUser()", 1000);
 	}
 
@@ -53,7 +53,5 @@
 <%@include file="/WEB-INF/jspf/messages/error.jsp"%>
 
 <div align="center" class="content_msg"><fmt:message key="wait_player"/></div>
-
-<div align="left" class="content_msg" id="main_msg"><fmt:message key="time_wait"/> : [<span id="waitTimer"></span>]</div>
 
 </fmt:bundle>

@@ -289,9 +289,9 @@ INSERT INTO `sea_battle`.`user`
 VALUES
 (
 '1',
-'demchuck.dima@gmail.com',
+'sea.battle.user1@gmail.com',
 '2011-03-16 18:36:56',
-'AAA',
+'sea.battle.user1@gmail.com',
 'e10adc3949ba59abbe56e057f20f883e',
 1,
 '2011-03-01',
@@ -314,9 +314,9 @@ INSERT INTO `sea_battle`.`user`
 VALUES
 (
 '2',
-'demchuckdima@gmail.com',
+'sea.battle.user2@gmail.com',
 '2011-03-16 18:37:21',
-'BBB',
+'sea.battle.user2@gmail.com',
 'e10adc3949ba59abbe56e057f20f883e',
 1,
 '2011-03-01',

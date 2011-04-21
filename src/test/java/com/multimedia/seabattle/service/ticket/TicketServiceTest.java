@@ -10,15 +10,17 @@ import static org.junit.Assert.*;
 
 public class TicketServiceTest {
 	private TicketServiceImpl ticketService;
+	
+	private static long id = 0L;
 
 	@Before
 	public void init(){
 		ticketService = new TicketServiceImpl();
 	}
 
-	private User getUser(){
+	private synchronized User getUser(){
 		User user = new User();
-		user.setId(System.currentTimeMillis());
+		user.setId(id++);
 		return user;
 	}
 
