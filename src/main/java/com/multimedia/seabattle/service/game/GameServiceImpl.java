@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.multimedia.seabattle.dao.IGenericDAO;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.Round;
 import com.multimedia.seabattle.model.beans.Ship;
 import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.TurnResult;
@@ -290,6 +291,11 @@ public class GameServiceImpl implements IGameService {
 			}
 		}
 		return rez;
+	}
+	
+	@Override
+	public List<Round> getRounds(Game game, Boolean player1) {
+		return round_service.getRounds(game, player1);
 	}
 	
 	@Override

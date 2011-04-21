@@ -17,6 +17,8 @@ $(function() {
 	drawContent( "div#content1", "1", false);
 	drawContent( "div#content2", "2", true);
 	drawShips("myShips.htm", "1");
+	drawShots({opponent:true, postfix:"1"});
+	drawShots({opponent:false, postfix:"2"});
 });
 </script>
 

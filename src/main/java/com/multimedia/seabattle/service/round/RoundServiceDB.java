@@ -1,6 +1,7 @@
 package com.multimedia.seabattle.service.round;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Resource;
@@ -31,6 +32,7 @@ public class RoundServiceDB implements IRoundService{
 			return RoundResult.TURN_WRONG;
 		}
 		round.setCoordinates(c);
+		round.setHit(hit);
 		round_dao.makePersistent(round);
 
 		//starting new round
@@ -60,6 +62,14 @@ public class RoundServiceDB implements IRoundService{
 
 	private boolean generatePlayer() {
 		return random.nextBoolean();
+	}
+	
+	private final String[] pseudonyms = new String[]{"hit", "coordinates"};
+	@Override
+	public List<Round> getRounds(Game game, Boolean player1) {
+		return round_dao.getByPropertiesValuePortionOrdered(pseudonyms, pseudonyms,
+				new String[]{"game.id", "player1"},
+				new Object[]{game.getId(), player1}, 0, 0, null, null);
 	}
 
 //------------------------------------------- injection -------------------------------------

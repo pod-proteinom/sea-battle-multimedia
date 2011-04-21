@@ -23,6 +23,7 @@ import com.multimedia.seabattle.config.ITemplateConfig;
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Message;
+import com.multimedia.seabattle.model.beans.Round;
 import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.Ticket;
 import com.multimedia.seabattle.model.beans.TurnResult;
@@ -291,12 +292,12 @@ public class GameController implements ITicketListener, MessageSourceAware{
 		User user = (User) model.get("user");
 		if (game==null){
 			if (logger.isDebugEnabled()){
-				logger.debug("requested placed ships for non existing game");
+				logger.debug("requested shoot for non existing game");
 			}
 			return null;
 		} else {
 			if (logger.isDebugEnabled()){
-				logger.debug("getting placed ships for game #"+game.getId());
+				logger.debug("shooting in game #"+game.getId());
 			}
 			Boolean player1 = getPlayer(game, user);
 			if (player1==null){
@@ -310,6 +311,30 @@ public class GameController implements ITicketListener, MessageSourceAware{
 			}
 			sb.append(messageSource.getMessage(rez.getRoundResult().toString(), null, locale));
 			return new Message(sb.toString());
+		}
+	}
+
+	/** shows all shots that were made in current game by given player */
+	@RequestMapping(value="/shots.htm")
+	public @ResponseBody List<Round> shots(Map<String, Object> model, Locale locale,
+			@RequestParam(value="opponent") Boolean opponent)
+	{
+		Game game = (Game) model.get("game");
+		User user = (User) model.get("user");
+		if (game==null){
+			if (logger.isDebugEnabled()){
+				logger.debug("requested shots(rounds) for non existing game");
+			}
+			return null;
+		} else {
+			if (logger.isDebugEnabled()){
+				logger.debug("getting shots(rounds) for game #"+game.getId());
+			}
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null){
+				return null;
+			}
+			return gameService.getRounds(game, player1 ^ opponent);
 		}
 	}
 

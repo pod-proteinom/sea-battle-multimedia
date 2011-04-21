@@ -2,6 +2,7 @@ package com.multimedia.seabattle.service.game;
 
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.Round;
 import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.TurnResult;
 import com.multimedia.seabattle.model.beans.User;
@@ -101,4 +102,10 @@ public interface IGameService {
 	 * @param listener a listener to register.
 	 */
 	public void registerGameListener(IGameListener listener);
+
+	/**
+	 * get all rounds in a specified game by given player
+	 * @return only coordinate + hit fields
+	 */
+	public List<Round> getRounds(Game game, Boolean player1);
 }

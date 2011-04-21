@@ -1,7 +1,10 @@
 package com.multimedia.seabattle.service.round;
 
+import java.util.List;
+
 import com.multimedia.seabattle.model.beans.Coordinates;
 import com.multimedia.seabattle.model.beans.Game;
+import com.multimedia.seabattle.model.beans.Round;
 import com.multimedia.seabattle.model.types.RoundResult;
 
 public interface IRoundService {
@@ -22,5 +25,11 @@ public interface IRoundService {
 	 * @return player that will make its turn
 	 */
 	public RoundResult endRound(Game game, Boolean player1, Coordinates c, Boolean hit);
+
+	/**
+	 * get all rounds in a specified game by given player
+	 * @return only coordinate + hit fields
+	 */
+	public List<Round> getRounds(Game game, Boolean player1);
 
 }
