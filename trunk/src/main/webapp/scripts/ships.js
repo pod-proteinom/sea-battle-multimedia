@@ -3,18 +3,20 @@
  * @param id - id of the tag where to append boats
  * @param url - url where with available ships json 
  */
-function appendBoats(id, url){
-	if (!id) id = "#availableShips";
-	if (!url) url = "ships.htm"
+function appendBoats(options){
+	
+	if (!options.id) options.id = "#availableShips";
+	if (!options.url) options.url = "ships.htm";
+	if (!options.msg_quantity) options.msg_quantity = "quantity";
 	$.ajax({
-		"url": url,
+		"url": options.url,
 		dataType: "json",
 		success: function(data){
 
 		$.each(data, function(i, val){
-			$inner = $("<div id='"+val.type+"'></div>").appendTo(id);
+			$inner = $("<div id='"+val.type+"'></div>").appendTo(options.id);
 			$("<div>"+val.name+"</div>").appendTo($inner);
-			$("<span class='ship_quantity'>"+val.quantity+"</span>").appendTo($inner);
+			$("<span class='ship_quantity'>"+options.msg_quantity+":"+val.quantity+"</span>").appendTo($inner);
 	
 			appendBoat($inner, val.coordinates, true, val.type);
 		});

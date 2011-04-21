@@ -144,6 +144,7 @@ public class BattlefieldServiceImpl implements IBattlefieldService{
 	public void clear(Game game, Boolean player1) {
 		cell_dao.updateObjectArrayShortByProperty(new String[]{"ship"}, new Object[]{null},
 				new String[]{"game", "player1"}, new Object[]{game, player1});
+		ship_dao.deleteByPropertiesValue(new String[]{"game.id", "player1"}, new Object[]{game.getId(), player1});
 	}
 	
 	@Override

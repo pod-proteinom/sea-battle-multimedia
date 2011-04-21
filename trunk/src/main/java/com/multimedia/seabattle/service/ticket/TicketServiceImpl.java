@@ -13,15 +13,15 @@ import com.multimedia.seabattle.model.beans.Ticket;
 import com.multimedia.seabattle.model.beans.User;
 
 /**
- * implements ticket service with a HashSet that actually stores tickets
+ * Implements ticket service with a HashSet that actually stores tickets.
  * @author Dmitriy_Demchuk
- *
  */
 @Service(value="ticketService")
 public class TicketServiceImpl implements ITicketService{
 
 	private Map<Long, Ticket> tickets = new HashMap<Long, Ticket>();
-	private List<ITicketListener> listeners = new ArrayList<ITicketListener>();
+	private List<ITicketListener> listeners =
+		java.util.Collections.synchronizedList(new ArrayList<ITicketListener>());
 
 	@Override
 	public Ticket getTicket(User user) {
@@ -76,7 +76,7 @@ public class TicketServiceImpl implements ITicketService{
 	}
 	
 	@Override
-	public void registerListener(ITicketListener listener) {
+	public synchronized void registerListener(ITicketListener listener) {
 		//TODO: check whether this listener is duplicate
 		listeners.add(listener);
 	}

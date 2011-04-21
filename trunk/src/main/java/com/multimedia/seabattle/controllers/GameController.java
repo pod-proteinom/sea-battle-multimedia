@@ -1,6 +1,5 @@
 package com.multimedia.seabattle.controllers;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,13 +25,18 @@ import com.multimedia.seabattle.model.beans.Game;
 import com.multimedia.seabattle.model.beans.Message;
 import com.multimedia.seabattle.model.beans.ShipInfo;
 import com.multimedia.seabattle.model.beans.Ticket;
+import com.multimedia.seabattle.model.beans.TurnResult;
 import com.multimedia.seabattle.model.beans.User;
+import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
+import com.multimedia.seabattle.model.types.ShootResult;
 import com.multimedia.seabattle.service.game.IGameService;
+import com.multimedia.seabattle.service.ships.RandomShipGenerator;
 import com.multimedia.seabattle.service.ticket.ITicketListener;
 import com.multimedia.seabattle.service.ticket.ITicketService;
 import com.multimedia.seabattle.service.user.IUserService;
+import common.utils.CommonAttributes;
 
 @Controller
 @RequestMapping(value="/game")
@@ -47,8 +51,10 @@ public class GameController implements ITicketListener, MessageSourceAware{
 
 	private MessageSource messageSource;
 
-	private final String lobby_url="/WEB-INF/views/game/player_lobby.jsp";
-	private final String ready_url="/WEB-INF/views/game/player_ready.jsp";
+	private final String lobby_url = "/WEB-INF/views/game/player_lobby.jsp";
+	private final String ready_url = "/WEB-INF/views/game/player_ready.jsp";
+	private final String wait_url = "/WEB-INF/views/game/player_wait.jsp";
+	private final String game_url = "/WEB-INF/views/game/player_game.jsp";
 
 	/**
 	 * try to start a game, if no users waiting, create new ticket and wait for a game
@@ -58,25 +64,101 @@ public class GameController implements ITicketListener, MessageSourceAware{
 	@RequestMapping(value="/player.htm")
 	public String index(Map<String, Object> model){
 		User user = (User) model.get("user");
-		if (model.get("game")==null){
+		Game game = (Game) model.get("game");
+		if (game==null){
 			Ticket t = ticketService.getTicket(user);
 			if (t==null){
-				waitPlayer(model);
+				waitPlayerSign(model);
 			} else {
 				startingGame(model);
 			}
 		} else {
-			startingGame(model);
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null)
+				return null;
+			if (game.getReady1()&&game.getReady2()) {
+				playGame(model);
+			} else if (
+				    	(player1&&game.getReady1()) ||
+					    ((!player1)&&game.getReady2())
+					)
+			{
+				waitPlayerPlaceShips(model);
+			} else {
+				startingGame(model);
+			}
 		}
 		return config.getTemplateUrl();
 	}
 
-	private void waitPlayer(Map<String, Object> model){
-		model.put(config.getContentUrlAttribute(), lobby_url);
+	/**
+	 * player says that he/she is ready
+	 */
+	@RequestMapping(value="/player.htm", params="do=ready")
+	public String playerReady(Map<String, Object> model) {
+		User user = (User) model.get("user");
+		Game game = (Game) model.get("game");
+		if (game==null){
+			return null;
+		} else {
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null)
+				return null;
+			PlayerReadyType ready = gameService.playerReady(game, player1);
+			if (ready!=PlayerReadyType.READY) {
+				CommonAttributes.addErrorMessage(ready.toString(), model);
+				startingGame(model);
+			} else if (
+			    	(player1&&game.getReady2()) ||
+				    ((!player1)&&game.getReady1())
+					)
+			{
+				playGame(model);
+		    } else {
+				waitPlayerPlaceShips(model);
+			}
+		}
+		return config.getTemplateUrl();
 	}
 
-	private void startingGame(Map<String, Object> model){
+	/**
+	 * player says that he/she is ready
+	 */
+	@RequestMapping(value="/player.htm", params="do=auto")
+	public String auto(Map<String, Object> model) {
+		User user = (User) model.get("user");
+		Game game = (Game) model.get("game");
+		if (game==null){
+			return null;
+		} else {
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null)
+				return null;
+			Boolean generated = gameService.generatePlayerShips(game, player1, new RandomShipGenerator());
+			if (generated) {
+				CommonAttributes.addHelpMessage("operation_succeed", model);
+			} else {
+				CommonAttributes.addErrorMessage("operation_fail", model);
+			}
+		}
+		return index(model);
+	}
+
+	/** show page, while waiting for other player placing his ships */
+	private void waitPlayerPlaceShips(Map<String, Object> model) {
+		model.put(config.getContentUrlAttribute(), wait_url);
+	}
+	/** show a page with progress, while searching for other player signs for a game */
+	private void waitPlayerSign(Map<String, Object> model) {
+		model.put(config.getContentUrlAttribute(), lobby_url);
+	}
+	/** show a page with battlefield for placing ships */
+	private void startingGame(Map<String, Object> model) {
 		model.put(config.getContentUrlAttribute(), ready_url);
+	}
+	/** show a page with 2 battlefield's for placing ships */
+	private void playGame(Map<String, Object> model) {
+		model.put(config.getContentUrlAttribute(), game_url);
 	}
 
 	/**
@@ -85,6 +167,7 @@ public class GameController implements ITicketListener, MessageSourceAware{
 	@RequestMapping(value="/ships.htm")
 	public @ResponseBody Set<ShipInfo> getShipTypes(Map<String, Object> model, Locale locale){
 		Game game = (Game) model.get("game");
+		User user = (User) model.get("user");
 		if (game==null){
 			if (logger.isDebugEnabled()){
 				logger.debug("requested ships for non existing game");
@@ -94,7 +177,10 @@ public class GameController implements ITicketListener, MessageSourceAware{
 			if (logger.isDebugEnabled()){
 				logger.debug("getting ships for game #"+game.getId());
 			}
-			Set<ShipInfo> rez = gameService.getAvailableShips(game);
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null)
+				return null;
+			Set<ShipInfo> rez = gameService.getAvailableShips(game, player1);
 			for (ShipInfo info:rez){
 				info.setName(messageSource.getMessage(info.getType(), null, locale));
 			}
@@ -194,6 +280,36 @@ public class GameController implements ITicketListener, MessageSourceAware{
 				return null;
 			}
 			return gameService.getUsedCoordinates(game, player1);
+		}
+	}
+
+	@RequestMapping(value="/shoot.htm")
+	public @ResponseBody Message shoot(Map<String, Object> model, Locale locale,
+			@RequestParam(value="x") Integer x, @RequestParam(value="y") Integer y)
+	{
+		Game game = (Game) model.get("game");
+		User user = (User) model.get("user");
+		if (game==null){
+			if (logger.isDebugEnabled()){
+				logger.debug("requested placed ships for non existing game");
+			}
+			return null;
+		} else {
+			if (logger.isDebugEnabled()){
+				logger.debug("getting placed ships for game #"+game.getId());
+			}
+			Boolean player1 = getPlayer(game, user);
+			if (player1==null){
+				return null;
+			}
+			TurnResult rez = gameService.makeTurn(game, player1, new Coordinates(x, y));
+			StringBuilder sb = new StringBuilder();
+			if (rez.getShootResult()!=null) {
+				sb.append(messageSource.getMessage(rez.getShootResult().toString(), null, locale));
+				sb.append(", ");
+			}
+			sb.append(messageSource.getMessage(rez.getRoundResult().toString(), null, locale));
+			return new Message(sb.toString());
 		}
 	}
 

@@ -166,9 +166,12 @@ $("#autocomplete1").autocomplete({
 			}
         };
 	},
-	onSelect:function(){
+	onSelect:function() {
 		$("#country_id").val(this.pairs[this.ac.val()]);
 		$("#country_error").html('');
 	}
+});
+$("#autocomplete1").bind('keyup', function() {
+	$("#country_id").val('');
 });
 </script>

@@ -26,6 +26,10 @@ import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.seabattle.service.ticket.ITicketListener;
 import com.multimedia.seabattle.service.ticket.ITicketService;
 
+/**
+ * this class calls a javascript function when a new user's ticket is removed.
+ * @author Dmitriy_Demchuk
+ */
 @Service("TicketRemoteService")
 @RemoteProxy(name="TicketRemoteService")
 public class TicketRemoteService implements ITicketListener, InitializingBean{
@@ -44,7 +48,7 @@ public class TicketRemoteService implements ITicketListener, InitializingBean{
     }
 
     @RemoteMethod
-    public void waitForPlayer(){
+    public void waitForPlayer() {
     	ScriptSession scriptSession = WebContextFactory.get().getScriptSession();
     	HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 
@@ -55,7 +59,7 @@ public class TicketRemoteService implements ITicketListener, InitializingBean{
         	}
     	} else {
         	if (logger.isDebugEnabled()){
-        		logger.debug("user ["+user.getId()+"] starts waiting");
+        		logger.debug("user ["+user.getId()+"] starts waiting for an opponent");
         	}
     		timer.startWaiting(scriptSession.getId(), user.getId());
     	}

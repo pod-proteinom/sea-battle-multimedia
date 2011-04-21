@@ -13,7 +13,7 @@
 <script type="text/javascript">
 $(function() {
 	drawContent( "div#content1", "1");
-	appendBoats();
+	appendBoats({msg_quantity:'<fmt:message key="msg_quantity"/>'});
 	drawShips("myShips.htm", "1");
 });
 var delete_error='<fmt:message key="delete_error"/>';
@@ -23,11 +23,10 @@ var delete_error='<fmt:message key="delete_error"/>';
 
 <div align="center" id="dwr_error"></div>
 
-<%@include file="/WEB-INF/jspf/messages/help.jsp"%>
-<%@include file="/WEB-INF/jspf/messages/error.jsp"%>
-
 <div align="center" class="content_msg"><fmt:message key="starting_game"/></div>
-<div align="center" id="operation_result"></div>
+
+<%@include file="/WEB-INF/jspf/messages/help.jsp"%>
+<div align="center" id="operation_result"><%@include file="/WEB-INF/jspf/messages/error.jsp"%></div>
 
 <table>
 <tr valign="top"><td>
@@ -43,6 +42,8 @@ var delete_error='<fmt:message key="delete_error"/>';
 <div><fmt:message key="current_ship"/></div>
 <div id="currentShips"><fmt:message key="nothing"/></div>
 <div id="availableShips"></div>
+<div align="left"><a href="?do=auto"><fmt:message key="auto"/></a></div>
+<div align="left"><a href="?do=ready"><fmt:message key="ready"/></a></div>
 </td></tr>
 </table>
 

@@ -41,16 +41,23 @@ public class UserValidator implements IUserValidator{
 	}
 
 	public String validatePassword(final String password){
-		if (password!=null&&password.length()>5){
+		if (password==null) {
+			return "required";
+		} else {
+			return null;
+		}
+		/*if (password!=null&&password.length()>5){
 			return null;
 		} else {
 			return "password.simple";
-		}
+		}*/
 	}
 
 	public String validatePassword_repeat(final String password, final String repeat){
-		if (password==null||!password.equals(repeat)){
-			return "typeMismatch.password_repeat";
+		if (password==null){
+			return "required";
+		} else if (!password.equals(repeat)) {
+			return "password_repeat.different";
 		} else {
 			return null;
 		}
