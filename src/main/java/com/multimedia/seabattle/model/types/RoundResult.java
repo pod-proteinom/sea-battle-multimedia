@@ -14,5 +14,7 @@ public enum RoundResult {
 	/** player is trying to go not in his turn */
 	TURN_WRONG,
 	/** game not started yet */
-	GAME_NOT_STARTED
+	GAME_NOT_STARTED,
+	/** player looses the game */
+	LOOSE
 }

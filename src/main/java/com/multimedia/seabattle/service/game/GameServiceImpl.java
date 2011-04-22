@@ -52,7 +52,10 @@ public class GameServiceImpl implements IGameService {
 
 	private EnumMap<GameShipType, IGameShips> game_ships = new EnumMap<GameShipType, IGameShips>(GameShipType.class);
 
-	private List<IGameListener> listeners = java.util.Collections.synchronizedList(new ArrayList<IGameListener>());
+	private List<IGameListener> game_listeners =
+		java.util.Collections.synchronizedList(new ArrayList<IGameListener>());
+	private List<IRoundListener> round_listeners =
+		java.util.Collections.synchronizedList(new ArrayList<IRoundListener>());
 
 	@Override
 	public Game createGame(String player_1_name, String player_2_name) {
@@ -136,12 +139,12 @@ public class GameServiceImpl implements IGameService {
 		if (res == PlayerReadyType.READY){
 			if (player1){
 				game.setReady1(Boolean.TRUE);
-				for (IGameListener listener:listeners) {
+				for (IGameListener listener:game_listeners) {
 					listener.playerReady(game.getPlayer1(), game.getPlayer2());
 				}
 			} else {
 				game.setReady2(Boolean.TRUE);
-				for (IGameListener listener:listeners) {
+				for (IGameListener listener:game_listeners) {
 					listener.playerReady(game.getPlayer2(), game.getPlayer1());
 				}
 			}
@@ -193,40 +196,75 @@ public class GameServiceImpl implements IGameService {
 	@Override
 	public TurnResult makeTurn(Game game, Boolean player1,
 			Coordinates target) {
+		if (game.getWin1()!=null) {
+			if (game.getWin1()){
+				for (IRoundListener listener:round_listeners){;
+					listener.win(player1?game.getPlayer1():game.getPlayer2());
+					listener.loose(player1?game.getPlayer2():game.getPlayer1());
+				}
+				return new TurnResult(player1?RoundResult.WIN:RoundResult.LOOSE, null);
+			} else {
+				for (IRoundListener listener:round_listeners){;
+					listener.win(player1?game.getPlayer1():game.getPlayer2());
+					listener.loose(player1?game.getPlayer2():game.getPlayer1());
+				}
+				return new TurnResult(player1?RoundResult.LOOSE:RoundResult.WIN, null);
+			}
+		}
 		if (!round_service.proceedRound(game).equals(player1)){
 			if (logger.isDebugEnabled()){
 				logger.debug("turn wrong player ["+player1+"] game ["+game.getId()+"] target "+target);
 			}
 			return new TurnResult(RoundResult.TURN_WRONG, null);
 		}
-		ShootResult res;
-		if (player1){
-			res = battlefield_service.shoot(game, target, Boolean.FALSE);
-		} else {
-			res = battlefield_service.shoot(game, target, Boolean.TRUE);
-		}
+		ShootResult res = battlefield_service.shoot(game, target, !player1);
 		if (logger.isDebugEnabled()){
 			logger.debug("turn player ["+player1+"] game ["+game.getId()+"] target "+target+" result: ["+res+"]");
 		}
+		TurnResult tr;
 		switch (res){
 			case HIT:
-				return new TurnResult(
+				tr = new TurnResult(
 						round_service.endRound(game, player1, target, Boolean.TRUE),
 						res);
+				break;
 			case MISS:
-				return new TurnResult(
+				tr = new TurnResult(
 						round_service.endRound(game, player1, target, Boolean.FALSE),
 						res);
+				break;
 			case KILL:
+				tr = null;
 				break;
 			default:
 				throw new UnsupportedOperationException("player has not hit, miss or kill that is impossible");
 		}
-		if (battlefield_service.hasMoreShips(game, player1)){
-			return new TurnResult(
+		if (tr!=null) {
+			for (IRoundListener listener:round_listeners){
+			    if (tr.getRoundResult()==RoundResult.TURN_AGAIN) {
+			    	listener.round(player1?game.getPlayer1():game.getPlayer2(), tr);
+			    	listener.wait(player1?game.getPlayer2():game.getPlayer1(), tr);
+			    } else if (tr.getRoundResult()==RoundResult.TURN_NEXT) {
+			    	listener.round(player1?game.getPlayer2():game.getPlayer1(), tr);
+			    	listener.wait(player1?game.getPlayer1():game.getPlayer2(), tr);
+			    }
+			}
+			return tr;
+		}
+		if (battlefield_service.hasMoreShips(game, !player1)) {
+			tr = new TurnResult(
 					round_service.endRound(game, player1, target, Boolean.TRUE),
 					res);
+			for (IRoundListener listener:round_listeners) {
+		    	listener.round(player1?game.getPlayer1():game.getPlayer2(), tr);
+		    	listener.wait(player1?game.getPlayer2():game.getPlayer1(), tr);
+			}
+			return tr;
 		} else {
+			for (IRoundListener listener:round_listeners){;
+				listener.win(player1?game.getPlayer1():game.getPlayer2());
+				listener.loose(player1?game.getPlayer2():game.getPlayer1());
+			}
 			round_service.endRound(game, player1, target, Boolean.TRUE);
 
 			game.setEnded(new Timestamp(System.currentTimeMillis()));
@@ -301,7 +339,12 @@ public class GameServiceImpl implements IGameService {
 	@Override
 	public synchronized void registerGameListener(IGameListener listener) {
 		//TODO: check whether this listener is duplicate
-		listeners.add(listener);
+		game_listeners.add(listener);
+	}
+	@Override
+	public void registerRoundListener(IRoundListener listener) {
+		//TODO: check whether this listener is duplicate
+		round_listeners.add(listener);
 	}
 // -------------------------------- dependencies --------------------------
 	@Required

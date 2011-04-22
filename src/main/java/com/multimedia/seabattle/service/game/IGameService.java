@@ -104,6 +104,12 @@ public interface IGameService {
 	public void registerGameListener(IGameListener listener);
 
 	/**
+	 * register round listener for this game service.
+	 * @param listener a listener to register.
+	 */
+	public void registerRoundListener(IRoundListener  listener);
+
+	/**
 	 * get all rounds in a specified game by given player
 	 * @return only coordinate + hit fields
 	 */
