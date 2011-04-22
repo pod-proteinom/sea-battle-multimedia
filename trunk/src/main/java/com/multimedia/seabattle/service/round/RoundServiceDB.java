@@ -63,7 +63,7 @@ public class RoundServiceDB implements IRoundService{
 	private boolean generatePlayer() {
 		return random.nextBoolean();
 	}
-	
+
 	private final String[] pseudonyms = new String[]{"hit", "coordinates"};
 	@Override
 	public List<Round> getRounds(Game game, Boolean player1) {
