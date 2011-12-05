@@ -2,7 +2,7 @@ package com.multimedia.seabattle.config;
 
 import org.springframework.context.annotation.Configuration;
 
-@Configuration(value="templateConfig")
+@Component(value="templateConfig")
 public class CommonTemplateConfig implements ITemplateConfig {
 
 	protected final String templateUrl = "/WEB-INF/views/templates/my.jsp";
