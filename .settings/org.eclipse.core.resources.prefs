@@ -1,8 +1,8 @@
-#Thu Apr 21 20:00:47 EEST 2011
+#Tue Dec 06 09:54:54 EET 2011
 eclipse.preferences.version=1
-encoding//src/main/webapp/WEB-INF/classes/msg/common_ru.properties=UTF-8
-encoding//src/main/webapp/WEB-INF/classes/msg/errors_ru.properties=UTF-8
-encoding//src/main/webapp/WEB-INF/classes/msg/game/player_ru.properties=UTF-8
-encoding//src/main/webapp/WEB-INF/classes/msg/ships/shoot_en.properties=UTF-8
-encoding//src/main/webapp/WEB-INF/classes/msg/ships/shoot_ru.properties=UTF-8
+encoding//src/main/resources/msg/common_ru.properties=UTF-8
+encoding//src/main/resources/msg/errors_ru.properties=UTF-8
+encoding//src/main/resources/msg/game/player_ru.properties=UTF-8
+encoding//src/main/resources/msg/ships/shoot_en.properties=UTF-8
+encoding//src/main/resources/msg/ships/shoot_ru.properties=UTF-8
 encoding/<project>=UTF-8

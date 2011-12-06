@@ -31,7 +31,6 @@ import com.multimedia.seabattle.model.beans.User;
 import com.multimedia.seabattle.model.types.PlayerReadyType;
 import com.multimedia.seabattle.model.types.ShipCreationResult;
 import com.multimedia.seabattle.model.types.ShipType;
-import com.multimedia.seabattle.model.types.ShootResult;
 import com.multimedia.seabattle.service.game.IGameService;
 import com.multimedia.seabattle.service.ships.RandomShipGenerator;
 import com.multimedia.seabattle.service.ticket.ITicketListener;

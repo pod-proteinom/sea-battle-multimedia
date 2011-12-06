@@ -3,8 +3,6 @@ package com.multimedia.seabattle.service.user;
 import javax.annotation.Resource;
 
 import org.hibernate.validator.constraints.impl.EmailValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +11,6 @@ import com.multimedia.seabattle.service.country.ICountryService;
 
 @Service("UserValidator")
 public class UserValidator implements IUserValidator{
-	private static final Logger logger = LoggerFactory.getLogger(UserValidator.class);
 
 	private IUserService user_service;
 	private ICountryService country_service;
