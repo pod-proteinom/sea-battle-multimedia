@@ -408,6 +408,18 @@
 					</webAppConfig>
                 </configuration>
 			</plugin>
+			 <plugin>
+				  <groupId>com.jelastic</groupId>
+				  <artifactId>jelastic-maven-plugin</artifactId>
+				  <version>[1.5,)</version>
+				  <configuration>
+				     <email>${jelastic.username}</email>
+				     <password>${jelastic.password}</password>
+				     <context>ROOT</context>
+				     <environment>seabattle</environment>
+<!-- 				     <api_hoster>default value "api.jelastic.com"</api_hoster> -->
+				  </configuration>
+			 </plugin>
 		</plugins>
 	</build>
 </project>
