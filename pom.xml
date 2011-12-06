@@ -417,7 +417,7 @@
 				     <password>${jelastic.password}</password>
 				     <context>ROOT</context>
 				     <environment>seabattle</environment>
-<!-- 				     <api_hoster>default value "api.jelastic.com"</api_hoster> -->
+				     <api_hoster>jelastic.servint.net</api_hoster>
 				  </configuration>
 			 </plugin>
 		</plugins>
