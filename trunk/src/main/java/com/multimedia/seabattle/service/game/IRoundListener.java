@@ -1,7 +1,6 @@
 package com.multimedia.seabattle.service.game;
 
 import com.multimedia.seabattle.model.beans.TurnResult;
-import com.multimedia.seabattle.model.types.ShootResult;
 
 /**
  * methods of this class are called when new round begins.

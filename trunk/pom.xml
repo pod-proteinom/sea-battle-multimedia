@@ -14,8 +14,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version>1.6</java-version>
-		<org.springframework-version>3.0.4.RELEASE</org.springframework-version>
-		<org.springframework.roo-version>1.0.2.RELEASE</org.springframework.roo-version>
+		<org.springframework-version>3.1.0.RC2</org.springframework-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 		<org.directwebremoting-version>3.0.0-rc2-SNAPSHOT</org.directwebremoting-version>
@@ -107,14 +106,6 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.6.4</version>
-		</dependency>
-		
-		<!-- Roo dependencies -->
-		<dependency>
-			<groupId>org.springframework.roo</groupId>
-			<artifactId>org.springframework.roo.annotations</artifactId>
-			<version>${org.springframework.roo-version}</version>
-			<scope>provided</scope>
 		</dependency>
 				
 		<!-- AspectJ -->
@@ -251,6 +242,7 @@
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>catalina</artifactId>
 			<version>6.0.26</version>
+			<scope>provided</scope>
 		</dependency>	
 		<!-- cglib -->
 		<dependency>
@@ -331,118 +323,17 @@
           <url>http://mvnrepository.com</url>
           <layout>default</layout>
         </repository>
-
-       
-		
 	</repositories>
 	<build>
 		<plugins>
-			<!-- Properties loader -->
-	        <plugin>
-	            <groupId>org.codehaus.mojo</groupId>
-	            <artifactId>properties-maven-plugin</artifactId>
-	            <version>1.0-alpha-1</version>
-	            <executions>
-	                <execution>
-	                    <phase>initialize</phase>
-	                    <goals>
-	                        <goal>read-project-properties</goal>
-	                    </goals>
-	                    <configuration>
-	                        <files>
-	                        	<!-- jdbc driver -->
-	                            <file>src/main/resources/spring/database/jdbc.properties</file>
-	                        </files>
-	                    </configuration>
-	                </execution>
-	            </executions>
-	        </plugin>
-
-			<!-- database schema creation -->
-			 <plugin>
-		        <groupId>org.codehaus.mojo</groupId>
-		        <artifactId>sql-maven-plugin</artifactId>
-		        <version>1.4</version>
-
-		        <dependencies>
-					<dependency>
-				  		<groupId>mysql</groupId>
-				  		<artifactId>mysql-connector-java</artifactId>
-				  		<version>5.1.15</version>
-  					</dependency>
-				</dependencies>
-		        <!-- common configuration shared by all executions -->
-		        <configuration>
-					<driver>${jdbc.connection.driver_class}</driver>
-					<url>${jdbc.connection.url}</url>
-					<username>${jdbc.connection.username}</username>
-					<password>${jdbc.connection.password}</password>
-					<skip>false</skip>
-		        </configuration>
-
-				<executions>
-					<execution>
-						<id>drop-db</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<url>${jdbc.creation.url}</url>
-							<autocommit>true</autocommit>
-							<sqlCommand>DROP DATABASE IF EXISTS `${jdbc.creation.database}`;</sqlCommand>
-							<onError>continue</onError>
-						</configuration>
-					</execution>
-					<execution>
-						<id>create-db</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<url>${jdbc.creation.url}</url>
-							<autocommit>true</autocommit>
-							<sqlCommand>CREATE DATABASE IF NOT EXISTS `${jdbc.creation.database}` DEFAULT CHARACTER SET utf8;</sqlCommand>
-						</configuration>
-					</execution>
-					<execution>
-						<id>create-schema</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<autocommit>true</autocommit>
-							<srcFiles>
-								<srcFile>src/main/resources/create.sql</srcFile>
-							</srcFiles>
-							<onError>continue</onError>
-						</configuration>
-					</execution>
-
-					<!--execution>
-						<id>create-data</id>
-						<phase>process-test-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-							<configuration>
-							<orderFile>ascending</orderFile>
-							<fileset>
-								<basedir>${basedir}</basedir>
-								<includes>
-									<include>src/test/sql/test-data2.sql</include>
-									<include>src/test/sql/test-data1.sql</include>
-								</includes>
-							</fileset>
-						</configuration>
-					</execution-->
-				</executions>
-			</plugin>
-
-
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -457,9 +348,12 @@
 				<artifactId>native2ascii-maven-plugin</artifactId>
 				<configuration>
 					<encoding>UTF-8</encoding>
-			        <src>src/main/webapp/WEB-INF/classes/msg</src>
-			        <dest>${project.build.directory}/classes/msg</dest>
-			        <includes>**/*.properties</includes>
+			        <src>/msg</src>
+			        <dest>/msg</dest>
+			        <includes>
+			            <include>msg/**/*_en.properties</include>
+                        <include>msg/**/*_ru.properties</include>
+			        </includes>
 				</configuration>
 				<executions>
 					<execution>
@@ -492,16 +386,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<junitArtifactName>junit:junit</junitArtifactName>
-					<excludes>
-						<exclude>**/*_Roo_*</exclude>
-					</excludes>
-				</configuration>
 			</plugin>
 			<!-- uncomment this if you want to run under tomcat -->
 			<plugin>
